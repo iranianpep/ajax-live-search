@@ -9,11 +9,11 @@ http://ajaxlivesearch.com
 
 How to Install
 ================
-1.Copy the folders including ajax, class, css, font, img and js folders to your project.
+1. Copy the folders including ajax, class, css, font, img and js folders to your project.
 
-2.Open index.php and copy div with the class name ls_container somewhere in your page. Also do not forget to include links to CSS and JavaScript files includingstyle.min.css, fontello.css, animation.css, fontello-ie7.css, script.min.js and jquery-1.11.1.min.js.
+2. Open index.php and copy div with the class name ls_container somewhere in your page. Also do not forget to include links to CSS and JavaScript files includingstyle.min.css, fontello.css, animation.css, fontello-ie7.css, script.min.js and jquery-1.11.1.min.js.
 
-3.config.php that is located in class folder contains all the settings for AJAX Live Search:
+3. config.php that is located in class folder contains all the settings for AJAX Live Search:
 
 - HOST: Hostname of your database that is usually localhost.
 - DATABASE: Name of your database.
@@ -27,8 +27,8 @@ You can set it whatever you want, but it MUST be the same as ANTI_BOT value in s
 - SEARCH_START_TIME_OFFSET: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 - MAX_INPUT_LENGTH: This specifies the maximum length of characters in search field.
 
-4.script.min.js or script.js that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about form_anti_bot value and as you know it MUST be the same as ANTI_BOT value in config.php.
+4. script.min.js or script.js that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about form_anti_bot value and as you know it MUST be the same as ANTI_BOT value in config.php.
 
-5.process_livesearch.php that is located in ajax folder is responsible for processing requests coming from the search form. Here you just need to set Access-Control-Allow-Originheader.
+5. php that is located in ajax folder is responsible for processing requests coming from the search form. Here you just need to set Access-Control-Allow-Originheader.
 
-6.Enjoy.
+6. Enjoy.
