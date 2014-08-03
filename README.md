@@ -20,5 +20,5 @@
 	- SEARCH_START_TIME_OFFSET: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 	- MAX_INPUT_LENGTH: This specifies the maximum length of characters in search field.
 4. script.min.js or script.js that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about form_anti_bot value and as you know it MUST be the same as ANTI_BOT value in config.php.
-5. process_livesearch.php that is located in ajax folder is responsible for processing requests coming from the search form. Here you just need to set Access-Control-Allow-Originheader.
+5. process_livesearch.php that is located in ajax folder is responsible for processing requests coming from the search form. Here you just need to set Access-Control-Allow-Origin header.
 6. Enjoy.
