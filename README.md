@@ -16,7 +16,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
 1. Copy the folders including `ajax`, `class`, `css`, `font`, `img` and `js` folders to your project.
 
-2. Open `index.php` and copy `div` with the class name `ls_container` somewhere in your page. Also do not forget to include links to CSS and JavaScript files including `style.min.css`, `fontello.css`, `animation.css`, `fontello-ie7.css`, `script.min.js` and `jquery-1.11.1.min.js`.
+2. Open `index.php` and copy `div` with the class name `ls_container` somewhere in your page. Also do not forget to include links to CSS and JavaScript files including `style.min.css`, `fontello.css`, `animation.css`, `fontello-ie7.css`, `script.min.js` and `jquery-1.11.1.min.js`. Also do not forget to copy all the PHP codes from the top of `index.php` to your project.
 
 3. `config.php` that is located in `class` folder contains all the settings for AJAX Live Search:
 	- `HOST`: Hostname of your database that is usually `localhost`.
