@@ -41,7 +41,11 @@ file_exists(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'config.php'
 
     <!-- Search Form -->
     <form accept-charset="UTF-8" class="search" id="ls_form" name="ls_form">
-        <input type="hidden" name="ls_anti_bot" id="ls_anti_bot" value="<?php echo Handler::get_javascript_anti_bot(); ?>">
+    	<?php 
+    		// Set javascript anti bot value in the session
+    		Handler::get_javascript_anti_bot(); 
+    	?>
+        <input type="hidden" name="ls_anti_bot" id="ls_anti_bot" value="">
         <input type="hidden" name="ls_token" id="ls_token" value="<?php echo Handler::get_token(); ?>">
         <input type="hidden" name="ls_page_loaded_at" id="ls_page_loaded_at" value="<?php echo time(); ?>">
         <input type="hidden" name="ls_current_page" id="ls_current_page" value="1">
