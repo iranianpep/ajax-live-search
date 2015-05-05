@@ -1,7 +1,7 @@
 /*global $, clearTimeout, setTimeout, document, window*/
 // Config variable for live search (ls)
 var ls = {
-    url: "/ajax/process_livesearch.php",
+    url: "ajax/process_livesearch.php",
     form_id: "#ls_form",
     form_anti_bot_id: "#ls_anti_bot",
     // This should be the same as the same parameter's value in config file

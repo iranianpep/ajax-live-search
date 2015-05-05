@@ -54,7 +54,7 @@ class Handler
                 if ((int) $v < 0)
                     array_push($error, $k);
             }
-            elseif ($k === 'ls_query' && $v > Config::MAX_INPUT_LENGTH)
+            elseif ($k === 'ls_query' && strlen($v) > Config::MAX_INPUT_LENGTH)
                 array_push($error, $k);
         }
 
