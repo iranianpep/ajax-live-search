@@ -18,18 +18,24 @@ class Config
         // ***** Database ***** //
         'db' => array(
             'host' => 'localhost',
-            'database' => 'live_search',
-            'username' => 'root',
-            'pass' => 'root',
-            'table' => 'live_search_table',
-            'searchColumn' => 'name',
-//            'filterResult' => array(
-//                'id',
-//                'name'
-//            )
+            'database' => 'your_database',
+            'username' => 'your_username',
+            'pass' => 'your_pass',
+            'table' => 'your_table',
+            // specify the name of search column
+            'searchColumn' => 'your_table_search_column',
+            // filter the result by entering table column names
+            // to get all the columns, remove filterResult or make it an empty array
+            'filterResult' => array(
+                'id'
+            )
         ),
+        // ***** Form ***** //
+        // This must be the same as form_anti_bot in script.min.js or script.js
         'antiBot' => "Ehsan's guard",
+        // Assigning more than 3 seconds is not recommended
         'searchStartTimeOffset' => 3,
+        // ***** Search Input ***** /
         'maxInputLength' => 20
     );
 
