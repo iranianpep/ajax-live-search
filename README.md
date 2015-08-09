@@ -25,7 +25,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 	- `pass`: Password for the user.
 	- `table`: Name of the table that you want to be searched.
 	- `searchColumn`: Name of the column that you want to be searched.
-	- `antiBot`: This is used in a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with `ANTI_BOT` value. You can set it whatever you want, but it MUST be the same as `ANTI_BOT` value in `script.min.js` file.
+	- `antiBot`: This is used in a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. You can set it whatever you want, but it MUST be the same as `form_anti_bot` value in `script.min.js` file.
 	- `searchStartTimeOffset`: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 	- `maxInputLength`: This specifies the maximum length of characters in search field.
 	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned.
