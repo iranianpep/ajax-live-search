@@ -4,7 +4,7 @@ AJAX Live Search is a PHP search form that similar to Google Autocomplete featur
 
 ## Demo
 
-[Check it live](http://ajaxlivesearch.com).
+[Check it live](http://ajaxlivesearch.com) (will be updated soon).
 
 ## Browser Support
 
