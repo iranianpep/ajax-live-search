@@ -1,14 +1,17 @@
 <?php
+    file_exists(__DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Handler.php') ? require_once(__DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Handler.php') : die('There is no such a file: Handler.php');
+    file_exists(__DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Config.php') ? require_once(__DIR__.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Config.php') : die('There is no such a file: Config.php');
 
-if(session_id() == '')
+    use AjaxLiveSearch\core\Config;
+    use AjaxLiveSearch\core\Handler;
+
+if (session_id() == '') {
     session_start();
+}
 
 // For debugging. You can get rid of these two lines safely
 //    error_reporting(E_ALL);
 //    ini_set('display_errors', 1);
-
-file_exists(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'handler.php') ? require_once(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'handler.php') : die('There is no such a file: handler.php');
-file_exists(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'config.php') ? require_once(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'config.php') : die('There is no such a file: config.php');
 
 ?>
 
@@ -41,15 +44,15 @@ file_exists(__DIR__.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR.'config.php'
 
     <!-- Search Form -->
     <form accept-charset="UTF-8" class="search" id="ls_form" name="ls_form">
-    	<?php 
-    		// Set javascript anti bot value in the session
-    		Handler::get_javascript_anti_bot(); 
-    	?>
+        <?php
+            // Set javascript anti bot value in the session
+            Handler::getJavascriptAntiBot();
+        ?>
         <input type="hidden" name="ls_anti_bot" id="ls_anti_bot" value="">
-        <input type="hidden" name="ls_token" id="ls_token" value="<?php echo Handler::get_token(); ?>">
+        <input type="hidden" name="ls_token" id="ls_token" value="<?php echo Handler::getToken(); ?>">
         <input type="hidden" name="ls_page_loaded_at" id="ls_page_loaded_at" value="<?php echo time(); ?>">
         <input type="hidden" name="ls_current_page" id="ls_current_page" value="1">
-        <input type="text" name="ls_query" id="ls_query" placeholder="Type to start search (e.g., Chris, 你好, محمد)" autocomplete="off" maxlength="<?php echo Config::MAX_INPUT_LENGTH; ?>">
+        <input type="text" name="ls_query" id="ls_query" placeholder="Type to start search (e.g., Chris, 你好, محمد)" autocomplete="off" maxlength="<?php echo Config::getConfig('maxInputLength'); ?>">
 
         <!-- Result -->
         <div id="ls_result_div">

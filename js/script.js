@@ -18,7 +18,8 @@ var ls = {
     next_page_id: "ls_next_page",
     previous_page_id: "ls_previous_page",
     slide_speed: "fast",
-    type_delay: 350
+    type_delay: 350,
+    select_column_index: 1
 };
 
 var result = $(ls.result_id);
@@ -28,7 +29,6 @@ var current_page = $(ls.current_page_hidden_id);
 var current_page_lbl = $(ls.current_page_lbl_id);
 var total_page_lbl = $(ls.last_page_lbl_id);
 var page_range = $(ls.page_range_id);
-
 var select_result;
 
 function show_result() {
@@ -237,7 +237,7 @@ function search_query(search_object, bypass_check_last_value, reset_current_page
  */
 select_result = function () {
     'use strict';
-    query.val($(query.selected_row).find('td').eq('0').html());
+    query.val($(query.selected_row).find('td').eq(ls.select_column_index).html());
     hide_result();
 };
 
