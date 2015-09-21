@@ -110,7 +110,7 @@
 
             $dbInfo = Config::getConfig('db');
 
-            $sql = "SELECT COUNT(id) FROM {$dbInfo['table']}";
+            $sql = "SELECT COUNT(*) FROM {$dbInfo['table']}";
 
             // append where clause if search column is set in the config
             $whereClause = '';
