@@ -144,7 +144,18 @@
                 $baseSQL = "SELECT {$fromColumn} FROM {$dbInfo['table']}";
 
                 if (!empty($whereClause)) {
-                    $baseSQL .= "{$whereClause} ORDER BY {$dbInfo['searchColumn']}";
+                    // set order by
+                    $orderBy = !empty($dbInfo['orderBy']) ? $dbInfo['orderBy'] : $dbInfo['searchColumn'];
+
+                    // set order direction
+                    $allowedOrderDirection = array('ASC', 'DESC');
+                    if (!empty($dbInfo['orderDirection']) && in_array($dbInfo['orderDirection'], $allowedOrderDirection)) {
+                        $orderDirection = $dbInfo['orderDirection'];
+                    } else {
+                        $orderDirection = 'ASC';
+                    }
+
+                    $baseSQL .= "{$whereClause} ORDER BY {$orderBy} {$orderDirection}";
                 }
 
                 if ($items_per_page === 0) {

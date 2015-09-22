@@ -24,6 +24,10 @@ class Config
             'table' => 'your_table',
             // specify the name of search column
             'searchColumn' => 'your_table_search_column',
+			// specify order by column. This is optional
+            'orderBy' => '',
+            // specify order direction e.g. ASC or DESC. This is optional
+            'orderDirection' => '',
             // filter the result by entering table column names
             // to get all the columns, remove filterResult or make it an empty array
             'filterResult' => array(
