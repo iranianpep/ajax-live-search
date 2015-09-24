@@ -24,13 +24,13 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 	- `username`: The user associated with your database.
 	- `pass`: Password for the user.
 	- `table`: Name of the table that you want to be searched.
-	- `searchColumn`: Name of the column that you want to be searched.
+	- `searchColumns`: Name of the columns that you want to be searched. (type: array)
 	- `orderBy`: Name of the column that you want the result to be ordered based on that. (optional)
 	- `orderDirection`: Direction of orderBy config. (optional)
 	- `antiBot`: This is used in a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. You can set it whatever you want, but it MUST be the same as `form_anti_bot` value in `script.min.js` file.
 	- `searchStartTimeOffset`: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 	- `maxInputLength`: This specifies the maximum length of characters in search field.
-	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned.
+	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned. (type: array - optional)
 
 4. `script.min.js` or `script.js` that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about `form_anti_bot` value and as you know it MUST be the same as `antiBot` value in `Config.php`. You also need to set `select_column_index` which specifies the index of td element in result rows. This is used when user selects a row and the specified td element is copied into search field.
 
