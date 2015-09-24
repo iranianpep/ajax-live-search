@@ -30,9 +30,7 @@ class Config
             'orderDirection' => '',
             // filter the result by entering table column names
             // to get all the columns, remove filterResult or make it an empty array
-            'filterResult' => array(
-                'id'
-            )
+            'filterResult' => array()
         ),
         // ***** Form ***** //
         // This must be the same as form_anti_bot in script.min.js or script.js
