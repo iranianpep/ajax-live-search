@@ -112,10 +112,21 @@
 
             $sql = "SELECT COUNT(*) FROM {$dbInfo['table']}";
 
-            // append where clause if search column is set in the config
+            // append where clause if search columns is set in the config
             $whereClause = '';
-            if (!empty($dbInfo['searchColumn'])) {
-                $whereClause .= " WHERE {$dbInfo['searchColumn']} LIKE :query";
+            if (!empty($dbInfo['searchColumns'])) {
+                $whereClause .= " WHERE";
+                $counter = 1;
+                foreach ($dbInfo['searchColumns'] as $searchColumn) {
+                    if ($counter == count($dbInfo['searchColumns'])) {
+                        // last item
+                        $whereClause .= " {$searchColumn} LIKE :query{$counter}";
+                    } else {
+                        $whereClause .= " {$searchColumn} LIKE :query{$counter} OR";
+                    }
+
+                    $counter++;
+                }
                 $sql .= $whereClause;
             }
 
@@ -124,7 +135,11 @@
 
             if (!empty($whereClause)) {
                 $search_query = $query . '%';
-                $stmt->bindParam(':query', $search_query, \PDO::PARAM_STR);
+
+                for ($i = 1; $i <= count($dbInfo['searchColumns']); $i++) {
+                    $toBindQuery = ':query' . $i;
+                    $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                }
             }
 
             $stmt->execute();
@@ -145,7 +160,7 @@
 
                 if (!empty($whereClause)) {
                     // set order by
-                    $orderBy = !empty($dbInfo['orderBy']) ? $dbInfo['orderBy'] : $dbInfo['searchColumn'];
+                    $orderBy = !empty($dbInfo['orderBy']) ? $dbInfo['orderBy'] : $dbInfo['searchColumns'][0];
 
                     // set order direction
                     $allowedOrderDirection = array('ASC', 'DESC');
@@ -163,7 +178,10 @@
                     $stmt = $db->prepare($baseSQL);
 
                     if (!empty($whereClause)) {
-                        $stmt->bindParam(':query', $search_query, \PDO::PARAM_STR);
+                        for ($i = 1; $i <= count($dbInfo['searchColumns']); $i++) {
+                            $toBindQuery = ':query' . $i;
+                            $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                        }
                     }
 
                 } else {
@@ -192,7 +210,10 @@
                     );
 
                     if (!empty($whereClause)) {
-                        $stmt->bindParam(':query', $search_query, \PDO::PARAM_STR);
+                        for ($i = 1; $i <= count($dbInfo['searchColumns']); $i++) {
+                            $toBindQuery = ':query' . $i;
+                            $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                        }
                     }
                 }
 

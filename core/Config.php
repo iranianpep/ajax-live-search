@@ -22,8 +22,8 @@ class Config
             'username' => 'your_username',
             'pass' => 'your_pass',
             'table' => 'your_table',
-            // specify the name of search column
-            'searchColumn' => 'your_table_search_column',
+            // specify the name of search columns
+            'searchColumns' => array('your_table_search_column'),
 			// specify order by column. This is optional
             'orderBy' => '',
             // specify order direction e.g. ASC or DESC. This is optional
