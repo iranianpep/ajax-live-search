@@ -24,19 +24,21 @@ class Config
             'table' => 'your_table',
             // specify the name of search columns
             'searchColumns' => array('your_table_search_column'),
-			// specify order by column. This is optional
+            // specify order by column. This is optional
             'orderBy' => '',
             // specify order direction e.g. ASC or DESC. This is optional
             'orderDirection' => '',
             // filter the result by entering table column names
             // to get all the columns, remove filterResult or make it an empty array
-            'filterResult' => array()
+            'filterResult' => array(),
+            // to limit the maximum number of result uncomment this:
+            //'maxResult' => 100
         ),
         // ***** Form ***** //
         // This must be the same as form_anti_bot in script.min.js or script.js
         'antiBot' => "Ehsan's guard",
         // Assigning more than 3 seconds is not recommended
-        'searchStartTimeOffset' => 3,
+        'searchStartTimeOffset' => 2,
         // ***** Search Input ***** /
         'maxInputLength' => 20
     );

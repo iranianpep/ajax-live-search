@@ -1,5 +1,4 @@
 <?php
-
     namespace AjaxLiveSearch\core;
 
     file_exists(__DIR__.DIRECTORY_SEPARATOR.'DB.php') ? require_once(__DIR__.DIRECTORY_SEPARATOR.'DB.php') : die('There is no such a file: DB.php');
@@ -104,7 +103,10 @@
          * @return array
          */
         public static function getResult($query, $current_page = 1, $items_per_page = 0)
-        {
+        {/* TODO */ ini_set('display_errors', 1);
+            ini_set('display_startup_errors', 1);
+            error_reporting(-1);
+            xdebug_disable();
             // get connection
             $db = DB::getConnection();
 
@@ -145,6 +147,10 @@
             $stmt->execute();
             $number_of_result = (int)$stmt->fetch(\PDO::FETCH_COLUMN);
 
+            if (isset($dbInfo['maxResult']) && $number_of_result > $dbInfo['maxResult']) {
+                $number_of_result = $dbInfo['maxResult'];
+            }
+
             // initialize variables
             $HTML = '';
             $number_of_pages = 1;
@@ -174,6 +180,10 @@
                 }
 
                 if ($items_per_page === 0) {
+                    if (isset($dbInfo['maxResult'])) {
+                        $baseSQL .= " LIMIT {$dbInfo['maxResult']}";
+                    }
+
                     // show all
                     $stmt = $db->prepare($baseSQL);
 
@@ -183,7 +193,6 @@
                             $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
                         }
                     }
-
                 } else {
                     /*
                      * pagination
@@ -193,11 +202,59 @@
                     if ($number_of_result < $items_per_page) {
                         $number_of_pages = 1;
                     } elseif ($number_of_result > $items_per_page) {
-                        $number_of_pages = floor($number_of_result / $items_per_page) + 1;
+                        if ($number_of_result % $items_per_page === 0) {
+                            $number_of_pages = floor($number_of_result / $items_per_page);
+                        } else {
+                            $number_of_pages = floor($number_of_result / $items_per_page) + 1;
+                        }
                     } else {
                         $number_of_pages = $number_of_result / $items_per_page;
                     }
 
+                    if (isset($dbInfo['maxResult'])) {
+                        // calculate the limit
+
+                        // approach 1
+//                        if ($current_page == 1) {
+//                            if ($items_per_page > $dbInfo['maxResult']) {
+//                                $limit = $dbInfo['maxResult'];
+//                            } else {
+//                                $limit = $items_per_page;
+//                            }
+//
+//                        } else {
+//                            $displayed_so_for = ($current_page - 1) * $items_per_page;
+//                            if (floor($dbInfo['maxResult'] / $displayed_so_for) == 1) {
+//                                // last page
+//                                $limit = $dbInfo['maxResult'] - $items_per_page;
+//                            } else {
+//                                $limit = $items_per_page;
+//                            }
+//                        }
+
+                        if ($current_page == 1) {
+                            if ($items_per_page > $dbInfo['maxResult']) {
+                                $limit = $dbInfo['maxResult'];
+                            } else {
+                                $limit = $items_per_page;
+                            }
+                        } elseif ($current_page == $number_of_pages) {
+                            // last page
+                            $limit = $dbInfo['maxResult'] - (($current_page - 1) * $items_per_page);
+                        } else {
+                            $limit = $items_per_page;
+                        }
+
+//var_dump($limit);exit;
+
+
+//                        if ($items_per_page > $dbInfo['maxResult'] || $current_page * $items_per_page > $dbInfo['maxResult']) {
+//                            $items_per_page =  $dbInfo['maxResult'];
+//                        }
+                    } else {
+                        $limit = $items_per_page;
+                    }
+//var_dump($items_per_page);exit;
                     /*
                      * pagination
                      *
@@ -206,7 +263,7 @@
                     $start = ($current_page > 0) ? ($current_page - 1) * $items_per_page : 0;
 
                     $stmt = $db->prepare(
-                        "{$baseSQL} LIMIT {$start}, {$items_per_page}"
+                        "{$baseSQL} LIMIT {$start}, {$limit}"
                     );
 
                     if (!empty($whereClause)) {
@@ -241,7 +298,7 @@
             // form the return
             return array(
                 'html' => $HTML,
-                'number_of_results' => (int)$number_of_result,
+                'number_of_results' => (int) $number_of_result,
                 'total_pages' => $number_of_pages
             );
         }
