@@ -103,10 +103,7 @@
          * @return array
          */
         public static function getResult($query, $current_page = 1, $items_per_page = 0)
-        {/* TODO */ ini_set('display_errors', 1);
-            ini_set('display_startup_errors', 1);
-            error_reporting(-1);
-            xdebug_disable();
+        {
             // get connection
             $db = DB::getConnection();
 
