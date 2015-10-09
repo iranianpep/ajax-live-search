@@ -116,12 +116,26 @@
             if (!empty($dbInfo['searchColumns'])) {
                 $whereClause .= " WHERE";
                 $counter = 1;
+
+                $binary = $dbInfo['caseSensitive'] == true ? 'BINARY' : '';
+
+                switch ($dbInfo['comparisonOperator']) {
+                    case '=':
+                        $comparisonOperator = '=';
+                        break;
+                    case 'LIKE':
+                        $comparisonOperator = 'LIKE';
+                        break;
+                    default:
+                        throw new \Exception('Comparison Operator is not valid');
+                }
+
                 foreach ($dbInfo['searchColumns'] as $searchColumn) {
                     if ($counter == count($dbInfo['searchColumns'])) {
                         // last item
-                        $whereClause .= " {$searchColumn} LIKE :query{$counter}";
+                        $whereClause .= " {$binary} {$searchColumn} {$comparisonOperator} :query{$counter}";
                     } else {
-                        $whereClause .= " {$searchColumn} LIKE :query{$counter} OR";
+                        $whereClause .= " {$binary} {$searchColumn} {$comparisonOperator} :query{$counter} OR";
                     }
 
                     $counter++;
@@ -133,7 +147,22 @@
             $stmt = $db->prepare($sql);
 
             if (!empty($whereClause)) {
-                $search_query = $query . '%';
+                switch ($dbInfo['searchPattern']) {
+                    case 'q':
+                        $search_query = $query;
+                        break;
+                    case '*q':
+                        $search_query = "%{$query}";
+                        break;
+                    case 'q*':
+                        $search_query = "{$query}%";
+                        break;
+                    case '*q*':
+                        $search_query = "%{$query}%";
+                        break;
+                    default:
+                        throw new \Exception('Search Pattern is not valid');
+                }
 
                 for ($i = 1; $i <= count($dbInfo['searchColumns']); $i++) {
                     $toBindQuery = ':query' . $i;
@@ -210,25 +239,6 @@
 
                     if (isset($dbInfo['maxResult'])) {
                         // calculate the limit
-
-                        // approach 1
-//                        if ($current_page == 1) {
-//                            if ($items_per_page > $dbInfo['maxResult']) {
-//                                $limit = $dbInfo['maxResult'];
-//                            } else {
-//                                $limit = $items_per_page;
-//                            }
-//
-//                        } else {
-//                            $displayed_so_for = ($current_page - 1) * $items_per_page;
-//                            if (floor($dbInfo['maxResult'] / $displayed_so_for) == 1) {
-//                                // last page
-//                                $limit = $dbInfo['maxResult'] - $items_per_page;
-//                            } else {
-//                                $limit = $items_per_page;
-//                            }
-//                        }
-
                         if ($current_page == 1) {
                             if ($items_per_page > $dbInfo['maxResult']) {
                                 $limit = $dbInfo['maxResult'];
@@ -241,17 +251,10 @@
                         } else {
                             $limit = $items_per_page;
                         }
-
-//var_dump($limit);exit;
-
-
-//                        if ($items_per_page > $dbInfo['maxResult'] || $current_page * $items_per_page > $dbInfo['maxResult']) {
-//                            $items_per_page =  $dbInfo['maxResult'];
-//                        }
                     } else {
                         $limit = $items_per_page;
                     }
-//var_dump($items_per_page);exit;
+
                     /*
                      * pagination
                      *

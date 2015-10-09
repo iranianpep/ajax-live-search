@@ -31,6 +31,9 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 	- `searchStartTimeOffset`: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 	- `maxInputLength`: This specifies the maximum length of characters in search field.
 	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned. (type: array - optional)
+	- `comparisonOperator`: Specify search query comparison operator. Possible values for comparison operators are: 'LIKE' and '='. this is required.
+	- `searchPattern`: This is used to specify how the query is searched. Possible values are: 'q', '*q', 'q*', '*q*'. this is required.
+	- `caseSensitive`: Specify search query case sensitivity. Possible values are: 'true' and 'false'. this is required.
 	- `maxResult`: This is used to limit the maximum number of result. If it is commented or removed, all the result will be returned. (type: integer - optional)
 
 4. `script.min.js` or `script.js` that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about `form_anti_bot` value and as you know it MUST be the same as `antiBot` value in `Config.php`. You also need to set `select_column_index` which specifies the index of td element in result rows. This is used when user selects a row and the specified td element is copied into search field.

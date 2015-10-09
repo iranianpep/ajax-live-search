@@ -31,6 +31,12 @@ class Config
             // filter the result by entering table column names
             // to get all the columns, remove filterResult or make it an empty array
             'filterResult' => array(),
+            // specify search query comparison operator. possible values for comparison operators are: 'LIKE' and '='. this is required.
+            'comparisonOperator' => 'LIKE',
+            // searchPattern is used to specify how the query is searched. possible values are: 'q', '*q', 'q*', '*q*'. this is required.
+            'searchPattern' => 'q*',
+            // specify search query case sensitivity
+            'caseSensitive' => false,
             // to limit the maximum number of result uncomment this:
             //'maxResult' => 100
         ),
