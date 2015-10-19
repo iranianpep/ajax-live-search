@@ -17,12 +17,10 @@ class DB
     private static $db;
 
     /**
-     * @throws \Exception
+     * @param $dbInfo
      */
-    private function __construct()
+    private function __construct($dbInfo)
     {
-        $dbInfo = Config::getConfig('db');
-
         try {
             self::$db = new \PDO(
                 'mysql:host='.$dbInfo['host'].';dbname='.$dbInfo['database'].';charset=utf8',
@@ -41,12 +39,13 @@ class DB
     }
 
     /**
+     * @param $dbInfo
      * @return \PDO
      */
-    public static function getConnection()
+    public static function getConnection($dbInfo)
     {
         if (!isset(self::$db)) {
-            new DB();
+            new DB($dbInfo);
         }
 
         return self::$db;

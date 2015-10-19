@@ -104,10 +104,17 @@
          */
         public static function getResult($query, $current_page = 1, $items_per_page = 0)
         {
-            // get connection
-            $db = DB::getConnection();
+            // get current selected data source
+            $currentDataSource = Config::getConfig('currentDataSource');
 
-            $dbInfo = Config::getConfig('db');
+            // get data sources list
+            $dataSources = Config::getConfig('dataSources');
+
+            // get info for the selected data source
+            $dbInfo = $dataSources[$currentDataSource];
+
+            // get connection
+            $db = DB::getConnection($dbInfo);
 
             $sql = "SELECT COUNT(*) FROM {$dbInfo['table']}";
 
