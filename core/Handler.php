@@ -110,9 +110,32 @@
             // get data sources list
             $dataSources = Config::getConfig('dataSources');
 
+            if (!isset($dataSources[$currentDataSource])) {
+                throw new \Exception("There is no data info for {$currentDataSource}");
+            }
+
             // get info for the selected data source
             $dbInfo = $dataSources[$currentDataSource];
 
+            switch ($dbInfo) {
+                case 'mysql':
+                    return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
+                    break;
+                default:
+                    return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
+            }
+        }
+
+        /**
+         * @param $dbInfo
+         * @param $query
+         * @param $current_page
+         * @param $items_per_page
+         * @return array
+         * @throws \Exception
+         */
+        private function getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page)
+        {
             // get connection
             $db = DB::getConnection($dbInfo);
 
