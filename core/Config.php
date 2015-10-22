@@ -43,6 +43,13 @@ class Config
                 //'maxResult' => 100,
                 'type'               => 'mysql',
             ),
+            'mainMongo' => array(
+                'server'       => 'your_server',
+                'database'     => 'local',
+                'collection'   => 'your_collection',
+                'filterResult' => array(),
+                'type'         => 'mongo',
+            ),
         ),
         // ***** Form ***** //
         // This must be the same as form_anti_bot in script.min.js or script.js

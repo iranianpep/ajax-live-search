@@ -115,9 +115,12 @@ class Handler
         // get info for the selected data source
         $dbInfo = $dataSources[$currentDataSource];
 
-        switch ($dbInfo) {
+        switch ($dbInfo['type']) {
             case 'mysql':
                 return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
+                break;
+            case 'mongo':
+                return self::getDataFromMongo($dbInfo, $query, $current_page, $items_per_page);
                 break;
             default:
                 return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
@@ -327,6 +330,39 @@ class Handler
             'html'              => $HTML,
             'number_of_results' => (int) $number_of_result,
             'total_pages'       => $number_of_pages,
+        );
+    }
+
+    private function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
+    {
+        $mongoClient = new \MongoClient($dbInfo['server']);
+        $database = $mongoClient->selectDB($dbInfo['database']);
+        $collection = $database->selectCollection($dbInfo['collection']);
+
+        $criteria = array();
+        $results = $collection->find($criteria, $dbInfo['filterResult']);
+
+        $HTML = '';
+
+        if (!empty($results)) {
+            foreach ($results as $result) {
+                $HTML .= '<tr>';
+                foreach ($result as $column) {
+                    $HTML .= "<td>{$column}</td>";
+                }
+                $HTML .= '</tr>';
+            }
+        } else {
+            // To prevent XSS prevention convert user input to HTML entities
+            $query = htmlentities($query, ENT_NOQUOTES, 'UTF-8');
+
+            // there is no result - return an appropriate message.
+            $HTML .= "<tr><td>There is no result for \"{$query}\"</td></tr>";
+        }
+
+        // form the return
+        return array(
+            'html' => $HTML,
         );
     }
 
