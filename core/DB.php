@@ -1,9 +1,9 @@
 <?php
 
-    namespace AjaxLiveSearch\core;
+namespace AjaxLiveSearch\core;
 
 if (count(get_included_files()) === 1) {
-    exit("Direct access not permitted.");
+    exit('Direct access not permitted.');
 }
 
 /**
@@ -23,7 +23,7 @@ class DB
     {
         try {
             self::$db = new \PDO(
-                'mysql:host='.$dbInfo['host'].';dbname='.$dbInfo['database'].';charset=utf8',
+                'mysql:host=' . $dbInfo['host'] . ';dbname=' . $dbInfo['database'] . ';charset=utf8',
                 $dbInfo['username'],
                 $dbInfo['pass']
             );
@@ -39,13 +39,13 @@ class DB
     }
 
     /**
-     * @param $dbInfo
+     * @param  $dbInfo
      * @return \PDO
      */
     public static function getConnection($dbInfo)
     {
         if (!isset(self::$db)) {
-            new DB($dbInfo);
+            new self($dbInfo);
         }
 
         return self::$db;
