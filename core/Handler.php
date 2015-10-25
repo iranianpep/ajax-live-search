@@ -117,7 +117,7 @@
             // get info for the selected data source
             $dbInfo = $dataSources[$currentDataSource];
 
-            switch ($dbInfo) {
+            switch ($dbInfo['type']) {
                 case 'mysql':
                     return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
                     break;
