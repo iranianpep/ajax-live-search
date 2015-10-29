@@ -342,7 +342,32 @@ class Handler
         $criteria = array();
         $results = $collection->find($criteria, $dbInfo['filterResult']);
 
+        if (!$results instanceof \MongoCursor) {
+            throw new \Exception('There is an issue getting data from Mongodb');
+        }
+
+        $number_of_result = $results->count();
+        $start = ($current_page > 0) ? ($current_page - 1) * $items_per_page : 0;
+        $results = $results->limit($items_per_page)->skip($start);
+
         $HTML = '';
+
+        /*
+         * pagination
+         *
+         * calculate total pages
+         */
+        if ($number_of_result < $items_per_page) {
+            $number_of_pages = 1;
+        } elseif ($number_of_result > $items_per_page) {
+            if ($number_of_result % $items_per_page === 0) {
+                $number_of_pages = floor($number_of_result / $items_per_page);
+            } else {
+                $number_of_pages = floor($number_of_result / $items_per_page) + 1;
+            }
+        } else {
+            $number_of_pages = $number_of_result / $items_per_page;
+        }
 
         if (!empty($results)) {
             foreach ($results as $result) {
@@ -363,6 +388,8 @@ class Handler
         // form the return
         return array(
             'html' => $HTML,
+            'number_of_results' => (int) $number_of_result,
+            'total_pages' => $number_of_pages,
         );
     }
 
