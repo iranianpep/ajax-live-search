@@ -333,6 +333,14 @@ class Handler
         );
     }
 
+    /**
+     * @param $dbInfo
+     * @param $query
+     * @param $current_page
+     * @param $items_per_page
+     * @return array
+     * @throws \Exception
+     */
     private function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
     {
         $mongoClient = new \MongoClient($dbInfo['server']);
@@ -373,7 +381,16 @@ class Handler
             foreach ($results as $result) {
                 $HTML .= '<tr>';
                 foreach ($result as $column) {
-                    $HTML .= "<td>{$column}</td>";
+                    if (is_array($column)) {
+                        $content = '';
+                        foreach ($column as $aColumnKey => $aColumnValue) {
+                            $content .= "{$aColumnKey} : {$aColumnValue} ";
+                        }
+
+                        $HTML .= "<td>{$content}</td>";
+                    } else {
+                        $HTML .= "<td>{$column}</td>";
+                    }
                 }
                 $HTML .= '</tr>';
             }
