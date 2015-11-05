@@ -48,8 +48,9 @@ class Config
                 'database'     => 'local',
                 'collection'   => 'your_collection',
                 'filterResult' => array(),
+                'searchField'  => 'your_collection_search_field',
                 'type'         => 'mongo',
-            ),
+            )
         ),
         // ***** Form ***** //
         // This must be the same as form_anti_bot in script.min.js or script.js

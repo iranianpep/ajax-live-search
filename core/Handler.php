@@ -347,7 +347,9 @@ class Handler
         $database = $mongoClient->selectDB($dbInfo['database']);
         $collection = $database->selectCollection($dbInfo['collection']);
 
-        $criteria = array();
+        $searchField = $dbInfo['searchField'];
+        $regex = new \MongoRegex("/^{$query}/i");
+        $criteria = array($searchField => $regex);
         $results = $collection->find($criteria, $dbInfo['filterResult']);
 
         if (!$results instanceof \MongoCursor) {
@@ -377,7 +379,7 @@ class Handler
             $number_of_pages = $number_of_result / $items_per_page;
         }
 
-        if (!empty($results)) {
+        if ($number_of_result > 0) {
             foreach ($results as $result) {
                 $HTML .= '<tr>';
                 foreach ($result as $column) {
