@@ -41,6 +41,14 @@ class Config
                 'caseSensitive'      => false,
                 // to limit the maximum number of result uncomment this:
                 //'maxResult' => 100,
+                // to display column header, change 'active' value to true
+                'displayHeader' => array(
+                    'active' => false,
+                    'mapper' => array(
+//                        'your_first_column' => 'Your Desired Title',
+//                        'your_second_column' => 'Your Desired Second Title'
+                    )
+                ),
                 'type'               => 'mysql',
             ),
             'mainMongo' => array(

@@ -309,6 +309,20 @@ class Handler
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+            if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
+                $headers = array_keys($results[0]);
+
+                $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : array();
+
+                // generate header
+                $HTML .= '<tr>';
+                foreach ($headers as $aHeader) {
+                    $aHeader = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
+                    $HTML .= "<th>{$aHeader}</th>";
+                }
+                $HTML .= '</tr>';
+            }
+            
             // generate HTML
             foreach ($results as $result) {
                 $HTML .= '<tr>';

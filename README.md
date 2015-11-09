@@ -35,6 +35,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 	- `searchPattern`: This is used to specify how the query is searched. Possible values are: 'q', '*q', 'q*', '*q*'. this is required.
 	- `caseSensitive`: Specify search query case sensitivity. Possible values are: 'true' and 'false'. this is required.
 	- `maxResult`: This is used to limit the maximum number of result. If it is commented or removed, all the result will be returned. (type: integer - optional)
+	- `displayHeader`: This is used to show or hide the table header by specifying 'active' to true or false. You can also map each actual column header to any title. (type: array - optional)
 
 4. `script.min.js` or `script.js` that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about `form_anti_bot` value and as you know it MUST be the same as `antiBot` value in `Config.php`. You also need to set `select_column_index` which specifies the index of td element in result rows. This is used when user selects a row and the specified td element is copied into search field.
 
