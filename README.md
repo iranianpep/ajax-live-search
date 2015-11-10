@@ -32,7 +32,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 	- `maxInputLength`: This specifies the maximum length of characters in search field.
 	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned. (type: array - optional)
 	- `comparisonOperator`: Specify search query comparison operator. Possible values for comparison operators are: 'LIKE' and '='. this is required.
-	- `searchPattern`: This is used to specify how the query is searched. Possible values are: 'q', '*q', 'q*', '*q*'. this is required.
+	- `searchPattern`: This is used to specify how the query is searched. Possible values are: "q", "*q", "q*", "*q*". this is required.
 	- `caseSensitive`: Specify search query case sensitivity. Possible values are: 'true' and 'false'. this is required.
 	- `maxResult`: This is used to limit the maximum number of result. If it is commented or removed, all the result will be returned. (type: integer - optional)
 	- `displayHeader`: This is used to show or hide the table header by specifying 'active' to true or false. You can also map each actual column header to any title. (type: array - optional)
