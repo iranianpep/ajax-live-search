@@ -16,9 +16,8 @@ class Config
      */
     private static $configs = array(
         // ***** Database ***** //
-        'currentDataSource'     => 'mainMysql',
         'dataSources'           => array(
-            'mainMysql' => array(
+            'ls_query' => array(
                 'host'               => 'localhost',
                 'database'           => 'your_database',
                 'username'           => 'your_username',
