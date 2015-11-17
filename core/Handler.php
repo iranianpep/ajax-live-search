@@ -82,7 +82,7 @@ class Handler
      *
      * @param $status
      * @param $message
-     * @param string     $result
+     * @param string      $result
      */
     public static function formResponse($status, $message, $result = '')
     {
@@ -94,26 +94,23 @@ class Handler
     }
 
     /**
-     *
+     * @param  $query_id: This               is html id
      * @param  $query
-     * @param  int      $current_page
-     * @param  int      $items_per_page
+     * @param  int        $current_page
+     * @param  int        $items_per_page
      * @return array
      */
-    public static function getResult($query, $current_page = 1, $items_per_page = 0)
+    public static function getResult($query_id, $query, $current_page = 1, $items_per_page = 0)
     {
-        // get current selected data source
-        $currentDataSource = Config::getConfig('currentDataSource');
-
         // get data sources list
         $dataSources = Config::getConfig('dataSources');
 
-        if (!isset($dataSources[$currentDataSource])) {
-            throw new \Exception("There is no data info for {$currentDataSource}");
+        if (!isset($dataSources[$query_id])) {
+            throw new \Exception("There is no data info for {$query_id}");
         }
 
         // get info for the selected data source
-        $dbInfo = $dataSources[$currentDataSource];
+        $dbInfo = $dataSources[$query_id];
 
         switch ($dbInfo['type']) {
             case 'mysql':
@@ -322,7 +319,7 @@ class Handler
                 }
                 $HTML .= '</tr>';
             }
-            
+
             // generate HTML
             foreach ($results as $result) {
                 $HTML .= '<tr>';
@@ -348,12 +345,12 @@ class Handler
     }
 
     /**
-     * @param $dbInfo
-     * @param $query
-     * @param $current_page
-     * @param $items_per_page
-     * @return array
+     * @param  $dbInfo
+     * @param  $query
+     * @param  $current_page
+     * @param  $items_per_page
      * @throws \Exception
+     * @return array
      */
     private function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
     {
@@ -420,9 +417,9 @@ class Handler
 
         // form the return
         return array(
-            'html' => $HTML,
+            'html'              => $HTML,
             'number_of_results' => (int) $number_of_result,
-            'total_pages' => $number_of_pages,
+            'total_pages'       => $number_of_pages,
         );
     }
 

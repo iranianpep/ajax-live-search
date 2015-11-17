@@ -5,7 +5,7 @@
 }
 
 /* Beginning of result div and table */
-#ls_result_div
+.ls_result_div
 {
     position: absolute;
     background-color: white;
@@ -21,12 +21,12 @@
     z-index: 1001;
 }
 
-#ls_result_main
+.ls_result_main
 {
     overflow: auto;
 }
 
-#ls_result_div table
+.ls_result_div table
 {
     width: 100%;
     margin: 0 auto;
@@ -34,13 +34,13 @@
     border-spacing: 0;
 }
 
-#ls_result_div table tr
+.ls_result_div table tr
 {
     height: 40px;
     line-height: 40px;
 }
 
-#ls_result_div table tr:first-child td:first-child
+.ls_result_div table tr:first-child td:first-child
 {
     border-radius: 4px 0px 0px 0px;
     -moz-border-radius: 4px 0px 0px 0px;
@@ -48,7 +48,7 @@
     -o-border-radius: 4px 0px 0px 0px;
 }
 
-#ls_result_div table tr:first-child td:last-child
+.ls_result_div table tr:first-child td:last-child
 {
     border-radius: 0px 4px 0px 0px;
     -moz-border-radius: 0px 4px 0px 0px;
@@ -56,17 +56,17 @@
     -o-border-radius: 0px 4px 0px 0px;
 }
 
-#ls_result_div table tr:last-child td
+.ls_result_div table tr:last-child td
 {
     border-bottom: none;
 }
 
-#ls_result_div table td
+.ls_result_div table td
 {
     border-bottom: 1px solid #DDD;
 }
 
-#ls_result_div table td:first-child
+.ls_result_div table td:first-child
 {
     padding-left: 9px;
 }
@@ -76,7 +76,7 @@
     color: red;
 }
 
-#ls_result_footer
+.ls_result_footer
 {
     border-radius: 0px 0px 4px 4px;
     -moz-border-radius: 0px 0px 4px 4px;
@@ -86,23 +86,23 @@
     height: 40px;
 }
 
-#ls_result_footer label
+.ls_result_footer label
 {
     font-weight: normal;
 }
 
-#ls_result_footer .navigation
+.ls_result_footer .navigation
 {
     margin-top: 2px;
 }
 
-#ls_result_footer .pagination
+.ls_result_footer .pagination
 {
     margin-top: 7px;
     margin-bottom: 0px;
 }
 
-#ls_result_footer .page_limit
+.ls_result_footer .page_limit
 {
     margin-top: 5px;
 }
@@ -126,7 +126,7 @@
     color: #276099;
 }
 
-#ls_result_footer select
+.ls_result_footer select
 {
     -webkit-appearance: menulist-button;
     height: 30px;
@@ -157,7 +157,7 @@
     background-position: 98% 46%;
 }
 
-#ls_query
+.ls_query
 {
     border: 1px solid #ccc;
     height: 46px;
@@ -178,7 +178,7 @@
     outline: 0;
 }
 
-#ls_query:focus
+.ls_query:focus
 {
     border-color: #0080bb;
     -webkit-box-shadow: 0 0 5px #0080bb;

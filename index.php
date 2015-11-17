@@ -9,6 +9,9 @@ if (session_id() == '') {
     session_start();
 }; ; // For debugging. You can get rid of these two lines safely; //    error_reporting(E_ALL);; //    ini_set('display_errors', 1);
 
+    Handler::getJavascriptAntiBot();
+    $token = Handler::getToken();
+    $time = time();
 ?>
 
 <!DOCTYPE html>
@@ -36,55 +39,13 @@ if (session_id() == '') {
 <body>
 
 <!-- Search Form Demo -->
-<div class="ls_container">
-
+<div style="float: left">
     <!-- Search Form -->
-    <form accept-charset="UTF-8" class="search" id="ls_form" name="ls_form">
-        <?php
-// Set javascript anti bot value in the session
-Handler::getJavascriptAntiBot();
-?>
-        <input type="hidden" name="ls_anti_bot" id="ls_anti_bot" value="">
-        <input type="hidden" name="ls_token" id="ls_token" value="<?php echo Handler::getToken();?>">
-        <input type="hidden" name="ls_page_loaded_at" id="ls_page_loaded_at" value="<?php echo time();?>">
-        <input type="hidden" name="ls_current_page" id="ls_current_page" value="1">
-        <input type="text" name="ls_query" id="ls_query" placeholder="Type to start search (e.g., Chris, 你好, محمد)" autocomplete="off" maxlength="<?php echo Config::getConfig('maxInputLength');?>">
-
-        <!-- Result -->
-        <div id="ls_result_div">
-            <div id="ls_result_main">
-                <table>
-                    <tbody>
-
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div id="ls_result_footer">
-                <div class="col page_limit">
-                    <select id="ls_items_per_page" name="ls_items_per_page">
-                        <option value="5" selected>5</option>
-                        <option value="10">10</option>
-                        <option value="0">All</option>
-                    </select>
-                </div>
-                <div class="col navigation">
-                    <i class="icon-left-circle arrow" id="ls_previous_page"></i>
-                </div>
-                <div class="col navigation pagination">
-                    <label id="ls_current_page_lbl">1</label> / <label id="ls_last_page_lbl"></label>
-                </div>
-                <div class="col navigation">
-                    <i class="icon-right-circle arrow" id="ls_next_page"></i>
-                </div>
-
-            </div>
-
-        </div>
-
-    </form>
-
+    <input type='text' id='ls_query' style="width: 120px;">
+</div>
+<div style="float: right">
+    <!-- another search form -->
+    <input type='text' id='listOfTests'>
 </div>
 <!-- /Search Form Demo -->
 
@@ -92,7 +53,22 @@ Handler::getJavascriptAntiBot();
 <script src="js/jquery-1.11.1.min.js"></script>
 
 <!-- Live Search Script -->
-<script type="text/javascript" src="js/script.min.js"></script>
+<script type="text/javascript" src="js/ajaxlivesearch.js"></script>
+
+<script>
+jQuery(document).ready(function(){
+	jQuery("#ls_query").ajaxlivesearch({
+        loaded_at: <?php echo $time; ?>,
+        token: <?php echo "'" . $token . "'"; ?>
+    });
+
+    jQuery("#listOfTests").ajaxlivesearch({
+        loaded_at: <?php echo $time; ?>,
+        token: <?php echo "'" . $token . "'"; ?>,
+        slide_speed: 'slow'
+    });
+})
+</script>
 
 </body>
 </html>
