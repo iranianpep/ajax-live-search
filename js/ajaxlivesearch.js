@@ -1,5 +1,5 @@
-(function($) {
-    $.fn.ajaxlivesearch = function(params) {
+(function ($) {
+    $.fn.ajaxlivesearch = function (params) {
 
         var ls = {
             url: "ajax/process_livesearch.php",
