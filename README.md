@@ -14,21 +14,21 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
 ## How to Install
 
-1. Copy the folders including `ajax`, `core`, `css`, `font`, `img` and `js` folders to your project.
+1. Copy the folders including `ajax`, `core`, `css`, `font`, `img` and `js` to your project.
 
 2. Open `index.php` and copy `div` with the class name `ls_container` somewhere in your page. Also do not forget to include links to CSS and JavaScript files including `style.min.css`, `fontello.css`, `animation.css`, `fontello-ie7.css`, `script.min.js` and `jquery-1.11.1.min.js`. Also do not forget to copy all the PHP codes from the top of `index.php` to your project.
 
-3. `Config.php` that is located in `core` folder contains all the settings for AJAX Live Search:
-	- `host`: Hostname of your database that is usually `localhost`.
-	- `database`: Name of your database.
-	- `username`: The user associated with your database.
-	- `pass`: Password for the user.
-	- `table`: Name of the table that you want to be searched.
-	- `searchColumns`: Name of the columns that you want to be searched. (type: array)
-	- `orderBy`: Name of the column that you want the result to be ordered based on that. (optional)
-	- `orderDirection`: Direction of orderBy config. (optional)
-	- `antiBot`: This is used in a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. You can set it whatever you want, but it MUST be the same as `form_anti_bot` value in `script.min.js` file.
-	- `searchStartTimeOffset`: This is for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
+3. `Config.php` that is located in `core` folder specially contains back-end settings for the plugin:
+	- `host`: Hostname of your database that is usually `localhost`. (type: string - required)
+	- `database`: Name of your database. (type: string - required)
+	- `username`: The user associated with your database. (type: string - required)
+	- `pass`: Password for the specified database username. (type: string - required)
+	- `table`: Name of the table that you want to be searched. (type: string - required)
+	- `searchColumns`: Name of the columns that you want to be searched. (type: array - required)
+	- `orderBy`: Name of the column that you want the result to be ordered based on that. (type: string - optional)
+	- `orderDirection`: Direction of orderBy config. (type: string - optional)
+	- `antiBot`: This is used as a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. You can set it whatever you want, but it MUST be the same as `form_anti_bot` option passed to the jQuery plugin. By default it is set to `ajaxlivesearch_guard`.
+	- `searchStartTimeOffset`: This is used for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
 	- `maxInputLength`: This specifies the maximum length of characters in search field.
 	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned. (type: array - optional)
 	- `comparisonOperator`: Specify search query comparison operator. Possible values for comparison operators are: 'LIKE' and '='. this is required.

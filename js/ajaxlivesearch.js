@@ -1,174 +1,185 @@
+/*global $, clearTimeout, setTimeout, document, window, jQuery*/
 (function ($) {
-    $.fn.ajaxlivesearch = function (params) {
-
-        var ls = {
-            url: "ajax/process_livesearch.php",
-            form_id: "ls_form",
-            form_anti_bot_class: "ls_anti_bot",
-            // This should be the same as the same parameter's value in config file
-            form_anti_bot: "Ehsan's guard",
-            query_id: $(this).attr('id'),
-            result_id: "ls_result_div",
-            footer_id: "ls_result_footer",
-            current_page_hidden_id: "ls_current_page",
-            current_page_lbl_id: "ls_current_page_lbl",
-            last_page_lbl_id: "ls_last_page_lbl",
-            page_range_id: "ls_items_per_page",
-            navigation_class: "navigation",
-            arrow_class: "arrow",
-            next_page_id: "ls_next_page",
-            previous_page_id: "ls_previous_page",
-            slide_speed: "fast",
-            type_delay: 350,
-            select_column_index: 1,
-            placeholder: 'Type to start searching'
-        };
-
-        ls = $.extend(ls, params);
-
-        if (typeof ls.loaded_at  == 'undefined') {
+    "use strict";
+    $.fn.ajaxlivesearch = function (options) {
+        /**
+         * Start validation
+         */
+        if (options.loaded_at === undefined) {
             throw 'loaded_at must be defined';
         }
 
-        if (typeof ls.token  == 'undefined') {
+        if (options.token === undefined) {
             throw 'token must be defined';
         }
-
-        // todo Max length
-        //var searchField
-
-        $(this).attr('placeholder', ls.placeholder);
-        $(this).attr('autocomplete', 'off');
-        $(this).attr('name', 'ls_query');
-        $(this).attr('class', 'ls_query');
-
-        var paginationHtml = '<div class="ls_result_footer" id="'+ ls.footer_id +'_'+ ls.query_id +'"><div class="col page_limit"><select id="'+ ls.page_range_id +'_'+ ls.query_id +'" name="ls_items_per_page"><option value="5" selected>5</option><option value="10">10</option><option value="0">All</option></select></div><div class="col '+ ls.navigation_class +'"><i class="icon-left-circle '+ ls.arrow_class +'" id="'+ ls.previous_page_id +'_'+ ls.query_id +'"></i></div><div class="col '+ ls.navigation_class +' pagination"><label id="'+ ls.current_page_lbl_id +'_'+ ls.query_id +'">1</label> / <label id="'+ ls.last_page_lbl_id +'_'+ ls.query_id +'"></label></div><div class="col '+ ls.navigation_class +'"><i class="icon-right-circle '+ ls.arrow_class +'" id="'+ ls.next_page_id +'_'+ ls.query_id +'"></i></div></div>';
-        var resultHtml = '<div class="ls_result_div" id="'+ ls.result_id +'_'+ ls.query_id +'"><div class="ls_result_main" id="ls_result_main_'+ ls.query_id+'"><table><tbody></tbody></table></div>' + paginationHtml + '</div>';
-        var mainHtml = '<div class="ls_container">' +
-            '<form accept-charset="UTF-8" class="search" id="'+ ls.form_id +'_'+ ls.query_id +'" name="ls_form">' +
-            '<input type="hidden" name="ls_anti_bot" class="'+ ls.form_anti_bot_class +'" value="">' +
-            '<input type="hidden" name="ls_token" class="ls_token" value="'+ ls.token +'">' +
-            '<input type="hidden" name="ls_page_loaded_at" class="ls_page_loaded_at" value="'+ ls.loaded_at +'">' +
-            '<input type="hidden" name="ls_current_page" id="'+ ls.current_page_hidden_id + '_' + ls.query_id +'" value="1">' +
-            '<input type="hidden" name="ls_query_id" value="'+ ls.query_id +'">' +
-            $(this)[0].outerHTML +
-            resultHtml +
-            '</form>' +
-            '</div>';
-
-        $(this).replaceWith(mainHtml);
-
-        var form = $('#' + ls.form_id + '_' + ls.query_id);
-        var result = $('#' + ls.result_id + '_' + ls.query_id);
-        var query = $('#' + ls.query_id);
-        var footer = $('#' + ls.footer_id + '_' + ls.query_id);
-        var arrow = $('.' + ls.arrow_class);
-        var navigation = $('.' + ls.navigation_class);
-        var current_page = $('#' + ls.current_page_hidden_id + '_' + ls.query_id);
-        var current_page_lbl = $('#' + ls.current_page_lbl_id + '_' + ls.query_id);
-        var total_page_lbl = $('#' + ls.last_page_lbl_id + '_' + ls.query_id);
-        var page_range = $('#' + ls.page_range_id + '_' + ls.query_id);
-        var select_result;
-
-        // Adjust result position based on search input position.
-        adjust_result_position();
-
-        // re-Adjust result position when screen resizes
-        $(window).resize(function () {
-            adjust_result_position();
-        });
-
-        // Set anti bot value for those that do not have JavaScript enabled
-        $('.' + ls.form_anti_bot_class).val(ls.form_anti_bot);
-
-        function show_result() {
-            'use strict';
-            result.slideDown(ls.slide_speed);
-        }
-
-        function hide_result() {
-            'use strict';
-            result.slideUp(ls.slide_speed);
-        }
-
-        /*
-         get the number of results and based on that optimized the select
-         number of rows / items dropdown
+        /**
+         * Finish validation
          */
-        function remove_select_options(number_of_results) {
-            'use strict';
-            var all_options, selected_option_removed;
 
-            // Store selected option
-            all_options = page_range.data('selected_option', page_range.val()).find("option");
+        var ls = {
+            url: "ajax/process_livesearch.php",
+            // This should be the same as the same parameter's value in config file
+            form_anti_bot: "ajaxlivesearch_guard",
+            /**
+             * Beginning of classes
+             */
+            form_anti_bot_class: "ls_anti_bot",
+            footer_class: "ls_result_footer",
+            next_page_class: "ls_next_page",
+            previous_page_class: "ls_previous_page",
+            page_limit: "page_limit",
+            result_wrapper_class: "ls_result_div",
+            result_class: "ls_result_main",
+            container_class: "ls_container",
+            pagination_class: "pagination",
+            form_class: "search",
+            loaded_at_class: "ls_page_loaded_at",
+            token_class: "ls_token",
+            current_page_hidden_class: "ls_current_page",
+            current_page_lbl_class: "ls_current_page_lbl",
+            last_page_lbl_class: "ls_last_page_lbl",
+            total_page_lbl_class: "ls_last_page_lbl",
+            page_range_class: "ls_items_per_page",
+            page_ranges: [0, 5, 10],
+            page_range_default: 5,
+            navigation_class: "navigation",
+            arrow_class: "arrow",
+            /**
+             * End of classes
+             */
+            slide_speed: "fast",
+            type_delay: 350,
+            placeholder: 'Type to start searching',
+            max_input: 20
+        };
 
-            // Store default options if it is not set
-            if (page_range.data('all_options') === undefined) {
-                page_range.data('all_options', all_options);
-            } else {
-                // reset the select
-                page_range.empty();
-                page_range.append(page_range.data('all_options'));
-            }
+        ls = $.extend(ls, options);
 
-            selected_option_removed = false;
-            $(page_range.data('all_options')).each(function () {
-                // remove unnecessary options
-                if (this.value >= number_of_results) {
-                    if (this.value === page_range.data('selected_option')) {
-                        // previously selected option is about to remove - In this case select the default one later
-                        selected_option_removed = true;
-                    }
-
-                    $(this).remove();
-                }
-            });
-
-            // update selected option based on previously selected option
-            if (selected_option_removed) {
-                page_range.val("0");
-            } else {
-                page_range.val(page_range.data('selected_option'));
-            }
-
-            // hide footer if the select has only one option (all)
-            if (page_range.find("option").length <= 1) {
-                footer.hide();
-                // add border radius to the last row of the result
-                result.find("table").addClass("border_radius");
-            } else {
-                // add border radius to the last row of the result
-                result.find("table").removeClass("border_radius");
-                footer.show();
-            }
-
-        }
-
-        /*
-         in case there is an error or there is no result,
-         remove footer, add border radius to bottom right and left,
-         and unbind click event and handler
+        /**
+         * Remove footer, add border radius to bottom right and left
+         *
+         * @param footer
+         * @param result
          */
-        function remove_footer() {
-            'use strict';
-            result.off("click", "tr", select_result);
+        function remove_footer(footer, result) {
             footer.hide();
             // add border radius to the last row of the result
             result.find("table").addClass("border_radius");
         }
 
-        /*
-         get the search input object (not just its value)
+        /**
+         * Add footer, and remove border radius from bottom right and left
+         *
+         * @param footer
+         * @param result
          */
-        function search_query(search_object, bypass_check_last_value, reset_current_page) {
-            'use strict';
-            if ($.trim(search_object.value).length) {
+        function show_footer(footer, result) {
+            // add border radius to the last row of the result
+            result.find("table").removeClass("border_radius");
+            footer.show();
+        }
 
-                // If the previous value is different from the new one perform the search
-                // Otherwise ignore that. This is useful when user change cursor position on the search field
+        /**
+         * Return minimum value of
+         *
+         * @param page_range
+         */
+        function get_minimum_option_value(page_range) {
+            var minimumOptionValue, i;
+            var all_options = page_range.find('option');
+            for (i = 0; i < all_options.length; i += 1) {
+                if (minimumOptionValue === undefined && parseInt(all_options[i].value) !== 0) {
+                    minimumOptionValue = all_options[i].value;
+                } else {
+                    if (parseInt(all_options[i].value) < parseInt(minimumOptionValue) && parseInt(all_options[i].value) !== 0) {
+                        minimumOptionValue = all_options[i].value;
+                    }
+                }
+            }
+
+            return minimumOptionValue;
+        }
+
+        /**
+         * Return the relevant element of the form
+         *
+         * @param form
+         * @param key
+         * @param options
+         * @returns {*}
+         */
+        function getFormInfo(form, key, options) {
+            if (form === undefined || options === undefined) {
+                throw 'Form or Options is missing';
+            }
+
+            var find = '.' + options.current_page_hidden_class;
+
+            switch (key) {
+            case 'result':
+                return form.find('.' + options.result_wrapper_class);
+            case 'footer':
+                return form.find('.' + options.footer_class);
+            case 'arrow':
+                return form.find('.' + options.arrow_class);
+            case 'navigation':
+                return form.find('.' + options.navigation_class);
+            case 'current_page':
+                return form.find(find);
+            case 'current_page_lbl':
+                return form.find('.' + options.current_page_lbl_class);
+            case 'total_page_lbl':
+                return form.find('.' + options.total_page_lbl_class);
+            case 'page_range':
+                return form.find('.' + options.page_range_class);
+            default:
+                throw 'Key: ' + key + ' is not found';
+            }
+        }
+
+        /**
+         * Slide up the result
+         *
+         * @param result
+         * @param options
+         */
+        function hide_result(result, options) {
+            result.slideUp(options.slide_speed);
+        }
+
+        /**
+         * Slide down the result
+         *
+         * @param result
+         * @param options
+         */
+        function show_result(result, options) {
+            result.slideDown(options.slide_speed);
+        }
+
+        /**
+         * Get the search input object (not just its value)
+         *
+         * @param search_object
+         * @param form
+         * @param options
+         * @param bypass_check_last_value
+         * @param reset_current_page
+         */
+        function search_query(search_object, form, options, bypass_check_last_value, reset_current_page) {
+            var result = getFormInfo(form, 'result', options);
+
+            if ($.trim(search_object.value).length) {
+                /**
+                 * If the previous value is different from the new one perform the search
+                 * Otherwise ignore that. This is useful when user change cursor position on the search field
+                 */
                 if (bypass_check_last_value || search_object.latest_value !== search_object.value) {
 
                     if (reset_current_page) {
+                        var current_page = getFormInfo(form, 'current_page', options);
+                        var current_page_lbl = getFormInfo(form, 'current_page_lbl', options);
+
                         // Reset the current page (label and hidden input)
                         current_page.val("1");
                         current_page_lbl.html("1");
@@ -187,11 +198,15 @@
 
                     // Start search after the type delay
                     search_object.to_be_executed = setTimeout(function () {
-
                         // Sometimes requests with no search value get through, double check the length to avoid it
-                        if ($.trim(query.val()).length) {
+                        if ($.trim(search_object.value).length) {
                             // Display loading icon
-                            query.addClass('ajax_loader');
+                            $(search_object).addClass('ajax_loader');
+
+                            var navigation = getFormInfo(form, 'navigation', options);
+                            var total_page_lbl = getFormInfo(form, 'total_page_lbl', options);
+                            var page_range = getFormInfo(form, 'page_range', options);
+                            var footer = getFormInfo(form, 'footer', options);
 
                             // Send the request
                             $.ajax({
@@ -201,53 +216,68 @@
                                 dataType: "json",
                                 success: function (response) {
                                     if (response.status === 'success') {
-
-                                        var resultObj = $.parseJSON(response.result);
+                                        var responseResultObj = $.parseJSON(response.result);
 
                                         // set html result and total pages
-                                        result.find('table tbody').html(resultObj.html);
+                                        result.find('table tbody').html(responseResultObj.html);
 
                                         /*
                                          If the number of results is zero, hide the footer (pagination)
                                          also unbind click and select_result handler
                                          */
-                                        if (resultObj.number_of_results === 0) {
-                                            remove_footer();
+                                        if (responseResultObj.number_of_results === 0) {
+                                            remove_footer(footer, result);
                                         } else {
                                             /*
                                              If total number of pages is 1 there is no point to have navigation / paging
                                              */
-                                            if (resultObj.total_pages > 1) {
-                                                $(navigation).show();
-                                                total_page_lbl.html(resultObj.total_pages);
+                                            if (responseResultObj.total_pages > 1) {
+                                                navigation.show();
+                                                total_page_lbl.html(responseResultObj.total_pages);
                                             } else {
                                                 // Hide paging
-                                                $(navigation).hide();
+                                                navigation.hide();
                                             }
 
-                                            /*
-                                             Display select options based on the total number of results
-                                             There is no point to have a option with the value of 10 when there is
-                                             only 5 results
+                                            /**
+                                             * Display select options based on the total number of results
+                                             * There is no point to have a option with the value of 10 when there is
+                                             * only 5 results
                                              */
-                                            remove_select_options(resultObj.number_of_results);
+                                            //remove_select_options(responseResultObj.number_of_results, page_range, result, footer);
 
-                                            result.on("click", "tr", select_result);
-                                            //footer.show();
+                                            var minimumOptionValue = get_minimum_option_value(page_range);
+
+                                            // if is visible
+                                            if (footer.is(":visible")) {
+                                                // if number of results is less than minimum range except 0: Hide
+                                                if (parseInt(responseResultObj.number_of_results) <= parseInt(minimumOptionValue)) {
+                                                    remove_footer(footer, result);
+                                                } else {
+                                                    show_footer(footer, result);
+                                                }
+                                            } else {
+                                                // if number of results is NOT less than minimum range except 0: show
+                                                if (parseInt(responseResultObj.number_of_results) > parseInt(minimumOptionValue)) {
+                                                    show_footer(footer, result);
+                                                } else {
+                                                    remove_footer(footer, result);
+                                                }
+                                            }
                                         }
 
                                     } else {
                                         // There is an error
                                         result.find('table tbody').html(response.message);
 
-                                        remove_footer();
+                                        remove_footer(footer, result);
                                     }
 
                                 },
                                 error: function () {
                                     result.find('table tbody').html('Something went wront. Please refresh the page.');
 
-                                    remove_footer();
+                                    remove_footer(footer, result);
                                 },
                                 complete: function () {
                                     /*
@@ -255,10 +285,10 @@
                                      it may add result even after there is no query in the search field
                                      */
                                     if ($.trim(search_object.value).length && result.is(":hidden")) {
-                                        show_result();
+                                        show_result(result, options);
                                     }
 
-                                    query.removeClass('ajax_loader');
+                                    $(search_object).removeClass('ajax_loader');
 
                                 }
                             });
@@ -271,10 +301,8 @@
 
             } else {
                 // If search field is empty, hide the result
-                // If $('#' + ls.result_id + ":animated") is removed, it may check visibility of the result div
-                // while it's animating and may not hide the div
                 if (result.is(":visible") || result.is(":animated")) {
-                    hide_result();
+                    hide_result(result, options);
                 }
             }
 
@@ -282,230 +310,328 @@
 
         }
 
-        /*
-         select row / item function when users click or press enter key
+        /**
+         * Generate Form html for the text input
+         *
+         * @param elem
+         * @param ls
+         * @returns {string}
          */
-        select_result = function () {
-            'use strict';
-            query.val($(query.selected_row).find('td').eq(ls.select_column_index).html());
-            hide_result();
-        };
+        function generateFormHtml(elem, ls) {
+            var elem_id = elem.attr('id');
+            elem.attr('placeholder', ls.placeholder);
+            elem.attr('autocomplete', 'off');
+            elem.attr('name', 'ls_query');
+            elem.addClass('ls_query');
+            elem.attr('maxlength', ls.max_input);
 
-        /*
-         result width and position is changed based on search input
-         */
-        function adjust_result_position() {
-            'use strict';
-            // considering result div border size, place the div in the center, underneath of search input
-            // outerwidth - border size of the result div
-            // adjust result position
-            $(result).css({left: query.position().left + 1, width: query.outerWidth() - 2});
+            var optionsHtml = '', i, selected, option_value;
+            var option_name = '';
+            for (i = 0; i < ls.page_ranges.length; i += 1) {
+                option_value = ls.page_ranges[i];
+                if (option_value === 0) {
+                    option_name = 'All';
+                } else {
+                    option_name = option_value;
+                }
+
+                if (ls.page_range_default === option_value) {
+                    selected = 'selected';
+                } else {
+                    selected = '';
+                }
+
+                optionsHtml += '<option value="' + option_value + '" ' + selected + '>' + option_name + '</option>';
+            }
+
+            var paginationHtml = '<div class="' + ls.footer_class + '">' +
+                    '<div class="col ' + ls.page_limit + '">' +
+                    '<select name="ls_items_per_page" class="' + ls.page_range_class + '">' +
+                    optionsHtml +
+                    '</select>' +
+                    '</div>' +
+                    '<div class="col ' + ls.navigation_class + '">' +
+                    '<i class="icon-left-circle ' + ls.arrow_class + ' ' + ls.previous_page_class + '">' +
+                    '</i>' +
+                    '</div>' +
+                    '<div class="col ' + ls.navigation_class + ' ' + ls.pagination_class + '">' +
+                    '<label class="' + ls.current_page_lbl_class + '">1</label> / ' +
+                    '<label class="' + ls.last_page_lbl_class + '"></label>' +
+                    '</div>' +
+                    '<div class="col ' + ls.navigation_class + '">' +
+                    '<i class="icon-right-circle ' + ls.arrow_class + ' ' + ls.next_page_class + '">' +
+                    '</i>' +
+                    '</div>' +
+                    '</div>';
+
+            var wrapper = '<div class="' + ls.container_class + '">' +
+                    '<form accept-charset="UTF-8" class="' + ls.form_class + '" id="' + ls.form_class + '_' + elem_id + '" name="ls_form">' +
+                    '</form>' +
+                    '</div>';
+
+            var hidden_inputs = '<input type="hidden" name="ls_anti_bot" class="' + ls.form_anti_bot_class + '" value="">' +
+                    '<input type="hidden" name="ls_token" class="' + ls.token_class + '" value="' + ls.token + '">' +
+                    '<input type="hidden" name="ls_page_loaded_at" class="' + ls.loaded_at_class + '" value="' + ls.loaded_at + '">' +
+                    '<input type="hidden" name="ls_current_page" class="' + ls.current_page_hidden_class + '" value="1">' +
+                    '<input type="hidden" name="ls_query_id" value="' + elem_id + '">';
+
+            var result = '<div class="' + ls.result_wrapper_class + '">' +
+                    '<div class="' + ls.result_class + '">' +
+                    '<table><tbody></tbody></table>' +
+                    '</div>' + paginationHtml + '</div>';
+
+            elem.wrap(wrapper);
+            elem.before(hidden_inputs);
+            elem.after(result);
         }
 
-        // Trigger search when typing is started
-        $(query).on('keyup', function (event) {
-            // If enter key is pressed check if the user want to selected hovered row
-            var keycode = event.keyCode || event.which;
-            if ($.trim(query.val()).length && keycode === 13) {
-                if ((result.is(":visible") || result.is(":animated")) && result.find("tr").length !== 0) {
-                    // find hovered row
-                    if (query.selected_row !== undefined) {
-                        /*
-                         Do whatever you want with the selected row
-                         Instead of calling directly select function, it should be through click event
-                         then easily can bind or unbind to page_range result handler
-                         */
-                        $(result).find("tr").trigger("click");
-                    } // If there is any results and hidden and the search input is in focus, show result by press enter
+        this.each(function () {
+            var query = $(this);
+            var query_id = query.attr('id');
+
+            generateFormHtml(query, ls);
+
+            var form = $('#' + ls.form_class + '_' + query_id);
+            var result = getFormInfo(form, 'result', ls);
+            var arrow = getFormInfo(form, 'arrow', ls);
+            var current_page = getFormInfo(form, 'current_page', ls);
+            var current_page_lbl = getFormInfo(form, 'current_page_lbl', ls);
+            var total_page_lbl = getFormInfo(form, 'total_page_lbl', ls);
+            var page_range = getFormInfo(form, 'page_range', ls);
+
+            /**
+             * Start binding
+             */
+            // Trigger search when typing is started
+            query.on('keyup', function (event) {
+                // If enter key is pressed check if the user wants to select hovered row
+                var keycode = event.keyCode || event.which;
+                if ($.trim(query.val()).length && keycode === 13) {
+                    if (!(result.is(":visible") || result.is(":animated")) || parseInt(result.find("tr").length) === 0) {
+                        show_result(result, ls);
+                    }
                 } else {
-                    show_result();
+                    // If something other than enter is pressed start search immediately
+                    search_query(this, form, ls, false, true);
                 }
-            } else {
-                // If something other than enter is pressed start search immediately
-                search_query(this, false, true);
-            }
-        });
+            });
 
-        // While search input is in focus
-        // Move among the rows, by pressing or keep pressing arrow up and down
-        $(query).on('keydown', function (event) {
+            /**
+             * While search input is in focus
+             * Move among the rows, by pressing or keep pressing arrow up and down
+             */
+            query.on('keydown', function (event) {
+                var keycode = event.keyCode || event.which;
+                if (keycode === 40 || keycode === 38) {
+                    if ($.trim(query.val()).length && result.find("tr").length !== 0) {
+                        if (result.is(":visible") || result.is(":animated")) {
+                            result.find('tr').removeClass('hover');
 
-            var keycode = event.keyCode || event.which;
-            if (keycode === 40 || keycode === 38) {
-                if ($.trim(query.val()).length && result.find("tr").length !== 0) {
-
-                    if ((result.is(":visible") || result.is(":animated"))) {
-                        result.find('tr').removeClass('hover');
-
-                        if (query.selected_row === undefined) {
-                            // Moving just started
-                            query.selected_row = result.find("tr").eq(0);
-                            $(query.selected_row).addClass("hover");
-                        } else {
-
-                            $(query.selected_row).removeClass("hover");
-
-                            if (keycode === 40) {
-                                // next
-                                if ($(query.selected_row).next().length === 0) {
-                                    // here is the end of the table
-                                    query.selected_row = result.find("tr").eq(0);
-                                    $(query.selected_row).addClass("hover");
-                                } else {
-                                    $(query.selected_row).next().addClass("hover");
-                                    query.selected_row = $(query.selected_row).next();
-                                }
-
+                            if (query.selected_row === undefined) {
+                                // Moving just started
+                                query.selected_row = result.find("tr").eq(0);
+                                $(query.selected_row).addClass("hover");
                             } else {
-                                // previous
-                                if ($(query.selected_row).prev().length === 0) {
-                                    // here is the end of the table
-                                    query.selected_row = result.find("tr").last();
-                                    query.selected_row.addClass("hover");
+                                $(query.selected_row).removeClass("hover");
+
+                                if (keycode === 40) {
+                                    // next
+                                    if ($(query.selected_row).next().length === 0) {
+                                        // here is the end of the table
+                                        query.selected_row = result.find("tr").eq(0);
+                                        $(query.selected_row).addClass("hover");
+                                    } else {
+                                        $(query.selected_row).next().addClass("hover");
+                                        query.selected_row = $(query.selected_row).next();
+                                    }
                                 } else {
-                                    $(query.selected_row).prev().addClass("hover");
-                                    query.selected_row = $(query.selected_row).prev();
+                                    // previous
+                                    if ($(query.selected_row).prev().length === 0) {
+                                        // here is the end of the table
+                                        query.selected_row = result.find("tr").last();
+                                        query.selected_row.addClass("hover");
+                                    } else {
+                                        $(query.selected_row).prev().addClass("hover");
+                                        query.selected_row = $(query.selected_row).prev();
+                                    }
                                 }
                             }
-
+                        } else {
+                            // If there is any results and hidden and the search input is in focus, show result by press down
+                            if (keycode === 40) {
+                                show_result(result, ls);
+                            }
                         }
-                    } else {
-                        // If there is any results and hidden and the search input is in focus, show result by press down
-                        if (keycode === 40) {
-                            show_result();
-                        }
-                    }
-                }
-            }
-
-        });
-
-        // Show result when is focused
-        $(query).on('focus', function () {
-            // check if the result is not empty show it
-            if ($.trim(query.val()).length && (result.is(":hidden") || result.is(":animated")) && result.find("tr").length !== 0) {
-                search_query(this, false, true);
-                show_result();
-            }
-        });
-
-        // In the beginning, there is no result / tr, so we bind the event to the future tr
-        $(result).on('mouseover', 'tr', function () {
-            // remove all the hover classes, otherwise there are more than one hovered rows
-            result.find('tr').removeClass('hover');
-
-            // set the current selected row
-            query.selected_row = this;
-
-            $(this).addClass('hover');
-        });
-
-        // In the beginning, there is no result / tr, so we bind the event to the future tr
-        $(result).on('mouseleave', 'tr', function () {
-            // remove all the hover classes, otherwise there are more than one hovered rows
-            result.find('tr').removeClass('hover');
-
-            // Reset selected row
-            query.selected_row = undefined;
-        });
-
-        $(result).on('click', 'tr', select_result);
-
-        // Click doesn't work on iOS - This is to fix that
-        // According to: http://stackoverflow.com/a/9380061/2045041
-        var touchStartPos;
-        $(document)
-            // log the position of the touchstart interaction
-            .bind('touchstart', function () {
-                touchStartPos = $(window).scrollTop();
-            })
-            // log the position of the touchend interaction
-            .bind('touchend', function (event) {
-                // calculate how far the page has moved between
-                // touchstart and end.
-                var distance, clickableItem;
-
-                distance = touchStartPos - $(window).scrollTop();
-
-                clickableItem = $(document);
-
-                // adding this class for devices that
-                // will trigger a click event after
-                // the touchend event finishes. This
-                // tells the click event that we've
-                // already done things so don't repeat
-
-                clickableItem.addClass("touched");
-
-                if (distance < 10 && distance > -10) {
-                    // the distance was less than 20px
-                    // so we're assuming it's tap and not swipe
-                    if (!$(event.target).closest(result).length && !$(event.target).is(query) && $(result).is(":visible")) {
-                        hide_result();
                     }
                 }
             });
 
-        $(document).on('click', function (event) {
-            // for any non-touch device, we need
-            // to still apply a click event
-            // but we'll first check to see
-            // if there was a previous touch
-            // event by checking for the class
-            // that was left by the touch event.
-            if ($(this).hasClass("touched")) {
-                // this item's event was already triggered via touch
-                // so we won't call the function and reset this for
-                // the next touch by removing the class
-                $(this).removeClass("touched");
-            } else {
-                // there wasn't a touch event. We're
-                // instead using a mouse or keyboard
-                // Hide the result if outside of the result is clicked
-                if (!$(event.target).closest(result).length && !$(event.target).is(query) && $(result).is(":visible")) {
-                    hide_result();
+            // Show result when is focused
+            query.on('focus', function () {
+                // check if the result is not empty show it
+                if ($.trim(query.val()).length && (result.is(":hidden") || result.is(":animated")) && result.find("tr").length !== 0) {
+                    search_query(this, form, ls, false, true);
+                    show_result(result, ls);
                 }
-            }
-        });
+            });
 
-        // disable the form submit on pressing enter
-        $(form).submit(function () {
-            return false;
-        });
+            // In the beginning, there is no result / tr, so we bind the event to the future tr
+            result.on('mouseover', 'tr', function () {
+                // remove all the hover classes, otherwise there are more than one hovered rows
+                result.find('tr').removeClass('hover');
 
-        // arrow button - next
-        $(arrow).on('click', function () {
-            var new_current_page;
-            if (this.id === ls.next_page_id + '_' + ls.query_id) {
-                // go next if it will be lower or equal to the total
-                if (parseInt(current_page.val(), 10) + 1 <= parseInt(total_page_lbl.html(), 10)) {
-                    new_current_page = parseInt(current_page.val(), 10) + 1;
+                // set the current selected row
+                query.selected_row = this;
+
+                $(this).addClass('hover');
+            });
+
+            // In the beginning, there is no result / tr, so we bind the event to the future tr
+            result.on('mouseleave', 'tr', function () {
+                // remove all the hover classes, otherwise there are more than one hovered rows
+                result.find('tr').removeClass('hover');
+
+                // Reset selected row
+                query.selected_row = undefined;
+            });
+
+            // disable the form submit on pressing enter
+            form.submit(function () {
+                return false;
+            });
+
+            // arrow button - next
+            arrow.on('click', function () {
+                var new_current_page;
+
+                if ($(this).hasClass(ls.next_page_class)) {
+                    // go next if it will be lower or equal to the total
+                    if (parseInt(current_page.val(), 10) + 1 <= parseInt(total_page_lbl.html(), 10)) {
+                        new_current_page = parseInt(current_page.val(), 10) + 1;
+                    } else {
+                        return;
+                    }
                 } else {
-                    return;
+                    // previous button
+                    if (parseInt(current_page.val(), 10) - 1 >= 1) {
+                        new_current_page = parseInt(current_page.val(), 10) - 1;
+                    } else {
+                        return;
+                    }
                 }
-            } else {
-                // previous button
-                if (parseInt(current_page.val(), 10) - 1 >= 1) {
-                    new_current_page = parseInt(current_page.val(), 10) - 1;
+
+                current_page.val(new_current_page);
+                current_page_lbl.html(new_current_page);
+
+                // search again
+                search_query(query[0], form, ls, true, false);
+            });
+
+            // Search again when the items per page dropdown is changed
+            page_range.on('change', function () {
+                /**
+                 * we need to pass a DOM Element: query[0]
+                 * In this case last value should not check against the current one
+                 */
+                search_query(query[0], form, ls, true, true);
+            });
+
+            result.css({left: query.position().left + 1, width: query.outerWidth() - 2});
+
+            // re-Adjust result position when screen resizes
+            $(window).resize(function () {
+                //adjust_result_position();
+                result.css({left: query.position().left + 1, width: query.outerWidth() - 2});
+            });
+
+            /**
+             * Click doesn't work on iOS - This is to fix that
+             * According to: http://stackoverflow.com/a/9380061/2045041
+             */
+            var touchStartPos;
+            $(document)
+                // log the position of the touchstart interaction
+                .bind('touchstart', function () {
+                    touchStartPos = $(window).scrollTop();
+                })
+                // log the position of the touchend interaction
+                .bind('touchend', function (event) {
+                    // calculate how far the page has moved between
+                    // touchstart and end.
+                    var distance, clickableItem;
+
+                    distance = touchStartPos - $(window).scrollTop();
+
+                    clickableItem = $(document);
+
+                    /**
+                     * adding this class for devices that
+                     * will trigger a click event after
+                     * the touchend event finishes. This
+                     * tells the click event that we've
+                     * already done things so don't repeat
+                     */
+                    clickableItem.addClass("touched");
+
+                    if (distance < 10 && distance > -10) {
+                        /**
+                         * Distance was less than 20px
+                         * so we're assuming it's tap and not swipe
+                         */
+                        if (!$(event.target).closest(result).length && !$(event.target).is(query) && $(result).is(":visible")) {
+                            hide_result(result, ls);
+                        }
+                    }
+                });
+
+            $(document).on('click', function (event) {
+                /**
+                 * For any non-touch device, we need to still apply a click event but we'll first check to see if there
+                 * was a previous touch event by checking for the class that was left by the touch event.
+                 */
+                if ($(this).hasClass("touched")) {
+                    /**
+                     * This item's event was already triggered via touch so we won't call the function and reset this
+                     * for the next touch by removing the class
+                     */
+                    $(this).removeClass("touched");
                 } else {
-                    return;
+                    /**
+                     * There wasn't a touch event. We're instead using a mouse or keyboard hide the result if outside
+                     * of the result is clicked
+                     */
+                    if (!$(event.target).closest(result).length && !$(event.target).is(query) && $(result).is(":visible")) {
+                        hide_result(result, ls);
+                    }
                 }
-            }
+            });
+            /**
+             * Finish binding
+             */
 
-            current_page.val(new_current_page);
-            current_page_lbl.html(new_current_page);
+            /**
+             * Custom Events
+             */
+            $(result).on('click', 'tr', function (e) {
+                var data = {selected: $(query.selected_row), this: this};
 
-            // search again
-            search_query(query[0], true, false);
+                if (options.onResultClick !== undefined) {
+                    options.onResultClick(e, data);
+                }
+            });
+
+            /**
+             * Custom Triggers
+             */
+            $(this).on('ajaxlivesearch:hide_result', function () {
+                hide_result(result, ls);
+            });
         });
 
-        // Search again when the items per page dropdown is changed
-        $(page_range).on('change', function () {
-            // we need to pass a DOM Element: query[0]
-            // In this case last value should not check against the current one
-            search_query(query[0], true, true);
-        });
+        // Set anti bot value for those that do not have JavaScript enabled
+        $('.' + ls.form_anti_bot_class).val(ls.form_anti_bot);
 
+        // keep chaining
         return this;
-    }
+    };
 })(jQuery);

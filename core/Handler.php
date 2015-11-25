@@ -82,7 +82,7 @@ class Handler
      *
      * @param $status
      * @param $message
-     * @param string      $result
+     * @param string     $result
      */
     public static function formResponse($status, $message, $result = '')
     {
@@ -94,11 +94,13 @@ class Handler
     }
 
     /**
-     * @param  $query_id: This               is html id
-     * @param  $query
-     * @param  int        $current_page
-     * @param  int        $items_per_page
+     * @param     $query_id: This is html id
+     * @param     $query
+     * @param int $current_page
+     * @param int $items_per_page
+     *
      * @return array
+     * @throws \Exception
      */
     public static function getResult($query_id, $query, $current_page = 1, $items_per_page = 0)
     {
@@ -132,7 +134,7 @@ class Handler
      * @throws \Exception
      * @return array
      */
-    private function getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page)
+    private static function getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page)
     {
         // get connection
         $db = DB::getConnection($dbInfo);
@@ -319,7 +321,7 @@ class Handler
                 }
                 $HTML .= '</tr>';
             }
-
+            
             // generate HTML
             foreach ($results as $result) {
                 $HTML .= '<tr>';
@@ -345,14 +347,14 @@ class Handler
     }
 
     /**
-     * @param  $dbInfo
-     * @param  $query
-     * @param  $current_page
-     * @param  $items_per_page
-     * @throws \Exception
+     * @param $dbInfo
+     * @param $query
+     * @param $current_page
+     * @param $items_per_page
      * @return array
+     * @throws \Exception
      */
-    private function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
+    private static function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
     {
         $mongoClient = new \MongoClient($dbInfo['server']);
         $database = $mongoClient->selectDB($dbInfo['database']);
@@ -417,9 +419,9 @@ class Handler
 
         // form the return
         return array(
-            'html'              => $HTML,
+            'html' => $HTML,
             'number_of_results' => (int) $number_of_result,
-            'total_pages'       => $number_of_pages,
+            'total_pages' => $number_of_pages,
         );
     }
 

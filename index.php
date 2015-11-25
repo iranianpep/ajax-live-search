@@ -7,11 +7,12 @@ use AjaxLiveSearch\core\Handler;
 
 if (session_id() == '') {
     session_start();
-}; ; // For debugging. You can get rid of these two lines safely; //    error_reporting(E_ALL);; //    ini_set('display_errors', 1);
+}
 
     Handler::getJavascriptAntiBot();
     $token = Handler::getToken();
     $time = time();
+    $maxInputLength = Config::getConfig('maxInputLength');
 ?>
 
 <!DOCTYPE html>
@@ -34,18 +35,13 @@ if (session_id() == '') {
     <!--[if IE 7]>
     <link rel="stylesheet" href="css/fontello-ie7.css">
     <![endif]-->
-    <link rel="stylesheet" type="text/css" href="css/style.min.css">
+    <link rel="stylesheet" type="text/css" href="css/ajaxlivesearch.min.css">
 </head>
 <body>
 
 <!-- Search Form Demo -->
-<div style="float: left">
-    <!-- Search Form -->
-    <input type='text' id='ls_query' style="width: 120px;">
-</div>
-<div style="float: right">
-    <!-- another search form -->
-    <input type='text' id='listOfTests'>
+<div style="clear: both">
+    <input type="text" class='mySearch' id="my_search_box">
 </div>
 <!-- /Search Form Demo -->
 
@@ -57,15 +53,27 @@ if (session_id() == '') {
 
 <script>
 jQuery(document).ready(function(){
-	jQuery("#ls_query").ajaxlivesearch({
-        loaded_at: <?php echo $time; ?>,
-        token: <?php echo "'" . $token . "'"; ?>
-    });
-
-    jQuery("#listOfTests").ajaxlivesearch({
+	jQuery(".mySearch").ajaxlivesearch({
         loaded_at: <?php echo $time; ?>,
         token: <?php echo "'" . $token . "'"; ?>,
-        slide_speed: 'slow'
+        maxInput: <?php echo $maxInputLength; ?>,
+        onResultClick: function(e, data) {
+            // get the index 1 (second column) value
+            var selectedOne = jQuery(data.selected).find('td').eq('1').html();
+
+            // set the input value
+            jQuery('.mySearch').val(selectedOne);
+
+            // hide the result
+            jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
+        }
+    });
+
+    jQuery("#ls_query").ajaxlivesearch({
+        loaded_at: <?php echo $time; ?>,
+        token: <?php echo "'" . $token . "'"; ?>,
+        slide_speed: 'slow',
+        max_input: <?php echo $maxInputLength; ?>
     });
 })
 </script>

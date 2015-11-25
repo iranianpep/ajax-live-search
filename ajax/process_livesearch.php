@@ -22,20 +22,28 @@ if (!Handler::verifyBotSearched($_POST['ls_page_loaded_at'])) {
 }
 
 // 3. Verify the token - CSRF protection
-if (!Handler::verifySessionValue('token', $_POST['ls_token'])
-    || !Handler::verifySessionValue('anti_bot', $_POST['ls_anti_bot'])
+if (!Handler::verifySessionValue('token', $_POST['ls_token']) ||
+    !Handler::verifySessionValue('anti_bot', $_POST['ls_anti_bot'])
 ) {
     // Tokens are not matched
     Handler::formResponse('failed', 'Error: Please refresh the page. It seems that your session is expired.');
 }
 
-// 4. Start looking for the query
-$result = json_encode(Handler::getResult(
-    $_POST['ls_query_id'],
-    $_POST['ls_query'],
-    (int) $_POST['ls_current_page'],
-    (int) $_POST['ls_items_per_page']
-));
+    try {
+        // 4. Start looking for the query
+        $result = json_encode(Handler::getResult(
+            $_POST['ls_query_id'],
+            $_POST['ls_query'],
+            (int) $_POST['ls_current_page'],
+            (int) $_POST['ls_items_per_page']
+        ));
+    } catch (\Exception $e) {
+        $catchedError = $e->getMessage();
+    }
 
-// 5. Return the result
-Handler::formResponse('success', 'Successful request', $result);
+    if (empty($catchedError)) {
+        // 5. Return the result
+        Handler::formResponse('success', 'Successful request', $result);
+    } else {
+        Handler::formResponse('failed', $catchedError);
+    }
