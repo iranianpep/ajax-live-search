@@ -16,16 +16,15 @@ class Config
      */
     private static $configs = array(
         // ***** Database ***** //
-        //'currentDataSource'     => 'mainMysql',
         'dataSources'           => array(
             'ls_query' => array(
                 'host'               => 'localhost',
-                'database'           => 'rightl_g8e',
+                'database'           => 'db_name',
                 'username'           => 'root',
                 'pass'               => 'root',
-                'table'              => 'g8e_class',
+                'table'              => 'table_name',
                 // specify the name of search columns
-                'searchColumns'      => array('subject_area'),
+                'searchColumns'      => array('column_name_1'),
                 // specify order by column. This is optional
                 'orderBy'            => '',
                 // specify order direction e.g. ASC or DESC. This is optional
@@ -51,14 +50,14 @@ class Config
                 ),
                 'type'               => 'mysql',
             ),
-            'listOfTests' => array(
+            'ls_query_2' => array(
                 'host'               => 'localhost',
-                'database'           => 'notify_on_time',
+                'database'           => 'db_name',
                 'username'           => 'root',
                 'pass'               => 'root',
-                'table'              => 'user_members',
+                'table'              => 'table_name',
                 // specify the name of search columns
-                'searchColumns'      => array('name'),
+                'searchColumns'      => array('column_name_1'),
                 // specify order by column. This is optional
                 'orderBy'            => '',
                 // specify order direction e.g. ASC or DESC. This is optional
@@ -78,43 +77,9 @@ class Config
                 'displayHeader' => array(
                     'active' => false,
                     'mapper' => array(
-                        'id' => 'Id',
-                        'name' => 'Name',
-                        'phone' => 'Phone'
-                    )
-                ),
-                'type'               => 'mysql',
-            ),
-            'my_search_box' => array(
-                'host'               => 'localhost',
-                'database'           => 'live_search',
-                'username'           => 'root',
-                'pass'               => 'root',
-                'table'              => 'live_search_table',
-                // specify the name of search columns
-                'searchColumns'      => array('name'),
-                // specify order by column. This is optional
-                'orderBy'            => '',
-                // specify order direction e.g. ASC or DESC. This is optional
-                'orderDirection'     => '',
-                // filter the result by entering table column names
-                // to get all the columns, remove filterResult or make it an empty array
-                'filterResult'       => array(),
-                // specify search query comparison operator. possible values for comparison operators are: 'LIKE' and '='. this is required.
-                'comparisonOperator' => 'LIKE',
-                // searchPattern is used to specify how the query is searched. possible values are: 'q', '*q', 'q*', '*q*'. this is required.
-                'searchPattern'      => 'q*',
-                // specify search query case sensitivity
-                'caseSensitive'      => true,
-                // to limit the maximum number of result uncomment this:
-                'maxResult' => 1,
-                // to display column header, change 'active' value to true
-                'displayHeader' => array(
-                    'active' => true,
-                    'mapper' => array(
-                        'id' => 'Id',
-//                        'name' => 'Name',
-//                        'phone' => 'Phone'
+                        //'id' => 'Id',
+                        //'name' => 'Name',
+                        //'phone' => 'Phone'
                     )
                 ),
                 'type'               => 'mysql',
@@ -129,7 +94,6 @@ class Config
             )
         ),
         // ***** Form ***** //
-        // This must be the same as form_anti_bot in script.min.js or script.js
         'antiBot'               => "ajaxlivesearch_guard",
         // Assigning more than 3 seconds is not recommended
         'searchStartTimeOffset' => 2,
