@@ -22,14 +22,27 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
 4. Change the url for `Access-Control-Allow-Origin header` in `process_livesearch.php` that is located in `ajax` folder.
 
-5. Lastly, hook the plugin to the text field and pass required options (loaded_at & token):
- 
-```
+5. Make sure php files: `Handler.php` and `Config.php` are included in the php page and you have these lines at the very top of the file (Check `index.php`).
+
+	```
+	if (session_id() == '') {
+    	session_start();
+	}
+
+	Handler::getJavascriptAntiBot();
+	$token = Handler::getToken();
+	$time = time();
+	$maxInputLength = Config::getConfig('maxInputLength');
+	```
+	
+6. Lastly, hook the plugin to the text field and pass required options (loaded_at & token):
+
+	```
 jQuery("#ls_query").ajaxlivesearch({
         loaded_at: <?php echo $time; ?>,
         token: <?php echo "'" . $token . "'"; ?>,
     });
-```
+	```
 
 ## jQuery Options
 <table width='100%'>

@@ -41,7 +41,7 @@ if (session_id() == '') {
 
 <!-- Search Form Demo -->
 <div style="clear: both">
-    <input type="text" class='mySearch' id="my_search_box">
+    <input type="text" class='mySearch' id="ls_query">
 </div>
 <!-- /Search Form Demo -->
 
@@ -67,13 +67,6 @@ jQuery(document).ready(function(){
             // hide the result
             jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
         }
-    });
-
-    jQuery("#ls_query").ajaxlivesearch({
-        loaded_at: <?php echo $time; ?>,
-        token: <?php echo "'" . $token . "'"; ?>,
-        slide_speed: 'slow',
-        max_input: <?php echo $maxInputLength; ?>
     });
 })
 </script>
