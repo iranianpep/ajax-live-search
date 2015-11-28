@@ -41,6 +41,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 jQuery("#ls_query").ajaxlivesearch({
         loaded_at: <?php echo $time; ?>,
         token: <?php echo "'" . $token . "'"; ?>,
+        maxInput: <?php echo $maxInputLength; ?>,
     });
 	```
 
