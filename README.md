@@ -1,10 +1,10 @@
 # [AJAX Live Search](http://ajaxlivesearch.com)
 
-AJAX Live Search is a PHP search form that similar to Google Autocomplete feature displays the result as you type.
+AJAX Live Search is a jQuery plugin / PHP search form that searches and displays the result as you type similar to Google Autocomplete feature.
 
 ## Demo
 
-[Check it live](http://ajaxlivesearch.com) (will be updated soon).
+[Check it it in action.](http://ajaxlivesearch.com)
 
 ## Browser Support
 
@@ -12,34 +12,401 @@ AJAX Live Search is a PHP search form that similar to Google Autocomplete featur
 --- | --- | --- | --- | --- |
 IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
-## How to Install
+## Getting started with Ajax Live Search
 
 1. Copy the folders including `ajax`, `core`, `css`, `font`, `img` and `js` to your project.
 
-2. Open `index.php` and copy `div` with the class name `ls_container` somewhere in your page. Also do not forget to include links to CSS and JavaScript files including `style.min.css`, `fontello.css`, `animation.css`, `fontello-ie7.css`, `script.min.js` and `jquery-1.11.1.min.js`. Also do not forget to copy all the PHP codes from the top of `index.php` to your project.
+2. Specify the required configurations specially database configurations in `Config.php`. The file is located in `core` folder and contains back-end settings for the plugin. Check PHP Configs table for more details.
 
-3. `Config.php` that is located in `core` folder specially contains back-end settings for the plugin:
-	- `host`: Hostname of your database that is usually `localhost`. (type: string - required)
-	- `database`: Name of your database. (type: string - required)
-	- `username`: The user associated with your database. (type: string - required)
-	- `pass`: Password for the specified database username. (type: string - required)
-	- `table`: Name of the table that you want to be searched. (type: string - required)
-	- `searchColumns`: Name of the columns that you want to be searched. (type: array - required)
-	- `orderBy`: Name of the column that you want the result to be ordered based on that. (type: string - optional)
-	- `orderDirection`: Direction of orderBy config. (type: string - optional)
-	- `antiBot`: This is used as a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. You can set it whatever you want, but it MUST be the same as `form_anti_bot` option passed to the jQuery plugin. By default it is set to `ajaxlivesearch_guard`.
-	- `searchStartTimeOffset`: This is used for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds.
-	- `maxInputLength`: This specifies the maximum length of characters in search field.
-	- `filterResult`: Can contain column names and is used to filter result. If it is an empty array everything will be returned. (type: array - optional)
-	- `comparisonOperator`: Specify search query comparison operator. Possible values for comparison operators are: 'LIKE' and '='. this is required.
-	- `searchPattern`: This is used to specify how the query is searched. Possible values are: 'q', '\*q', 'q\*', '\*q\*'. this is required.
-	- `caseSensitive`: Specify search query case sensitivity. Possible values are: 'true' and 'false'. this is required.
-	- `maxResult`: This is used to limit the maximum number of result. If it is commented or removed, all the result will be returned. (type: integer - optional)
-	- `displayHeader`: This is used to show or hide the table header by specifying 'active' to true or false. You can also map each actual column header to any title. (type: array - optional)
+3. Include `ajaxlivesearch.min.js` or `ajaxlivesearch.js` located in `js` folder in your project.
 
-4. `script.min.js` or `script.js` that is located in js folder contains all the JavaScript (jQuery) settings and functions for AJAX Live Search. Here you should only be worried about `form_anti_bot` value and as you know it MUST be the same as `antiBot` value in `Config.php`. You also need to set `select_column_index` which specifies the index of td element in result rows. This is used when user selects a row and the specified td element is copied into search field.
+4. Change the url for `Access-Control-Allow-Origin header` in `process_livesearch.php` that is located in `ajax` folder.
 
-5. `process_livesearch.php` that is located in ajax folder is responsible for processing requests coming from the search form. Here you just need to set `Access-Control-Allow-Origin header`.
+5. Lastly, hook the plugin to the text field and pass required options (loaded_at & token):
+ 
+```
+jQuery("#ls_query").ajaxlivesearch({
+        loaded_at: <?php echo $time; ?>,
+        token: <?php echo "'" . $token . "'"; ?>,
+    });
+```
+
+## jQuery Options
+<table width='100%'>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>loaded_at</td>
+<td>Integer</td>
+<td>Yes</td>
+<td>This is used to prevent bots from searching.</td>
+</tr>
+<tr>
+<td>token</td>
+<td>String</td>
+<td>Yes</td>
+<td>This is used to prevent CSRF attack.</td>
+</tr>
+<tr>
+<td>url</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ajax/process_livesearch.php.</td>
+</tr>
+<tr>
+<td>form_anti_bot</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ajaxlivesearch_guard</td>
+</tr>
+<tr>
+<td>slide_speed</td>
+<td>String</td>
+<td>No</td>
+<td>Default: fast</td>
+</tr>
+<tr>
+<td>type_delay</td>
+<td>Integer</td>
+<td>No</td>
+<td>Default: 350</td>
+</tr>
+<tr>
+<td>placeholder</td>
+<td>String</td>
+<td>No</td>
+<td>Default: Type to start searching</td>
+</tr>
+<tr>
+<td>max_input</td>
+<td>Integer</td>
+<td>No</td>
+<td>Default: 20</td>
+</tr>
+<tr>
+<td>page_ranges</td>
+<td>Array</td>
+<td>No</td>
+<td>Default: [0, 5, 10]</td>
+</tr>
+<tr>
+<td>page_range_default</td>
+<td>Integer</td>
+<td>No</td>
+<td>Default: 5</td>
+</tr>
+<tr>
+<td>form_anti_bot_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_anti_bot</td>
+</tr>
+<tr>
+<td>footer_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_result_footer</td>
+</tr>
+<tr>
+<td>next_page_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_next_page</td>
+</tr>
+<tr>
+<td>previous_page_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_previous_page</td>
+</tr>
+<tr>
+<td>page_limit</td>
+<td>String</td>
+<td>No</td>
+<td>Default: page_limit</td>
+</tr>
+<tr>
+<td>result_wrapper_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_result_div</td>
+</tr>
+<tr>
+<td>result_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_result_main</td>
+</tr>
+<tr>
+<td>container_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_container</td>
+</tr>
+<tr>
+<td>pagination_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: pagination</td>
+</tr>
+<tr>
+<td>form_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: search</td>
+</tr>
+<tr>
+<td>loaded_at_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_page_loaded_at</td>
+</tr>
+<tr>
+<td>token_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_token</td>
+</tr>
+<tr>
+<td>current_page_hidden_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_current_page</td>
+</tr>
+<tr>
+<td>current_page_lbl_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_current_page_lbl</td>
+</tr>
+<tr>
+<td>last_page_lbl_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_last_page_lbl</td>
+</tr>
+<tr>
+<td>total_page_lbl_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_last_page_lbl</td>
+</tr>
+<tr>
+<td>page_range_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: ls_items_per_page</td>
+</tr>
+<tr>
+<td>navigation_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: navigation</td>
+</tr>
+<tr>
+<td>arrow_class</td>
+<td>String</td>
+<td>No</td>
+<td>Default: arrow</td>
+</tr>
+</tbody>
+</table>
+
+## Custom Event
+<table width='100%'>
+<thead>
+<tr>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>onResultClick</td>
+</tr>
+</tbody>
+</table>
+
+Example:
+
+```
+jQuery(".mySearch").ajaxlivesearch({
+        loaded_at: <?php echo $time; ?>,
+        token: <?php echo "'" . $token . "'"; ?>,
+        maxInput: <?php echo $maxInputLength; ?>,
+        onResultClick: function(e, data) {
+            // get the index 1 (second column) value
+            var selectedOne = jQuery(data.selected).find('td').eq('1').html();
+
+            // set the input value
+            jQuery('.mySearch').val(selectedOne);
+
+            // hide the result
+            jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
+        }
+    });
+```
+## Custom Trigger
+<table width='100%'>
+<thead>
+<tr>
+<th>Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ajaxlivesearch:hide_result</td>
+</tr>
+</tbody>
+</table>
+
+## PHP Configurations
+<table width='100%'>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dataSources</td>
+<td>Array</td>
+<td>Yes</td>
+<td>Data source for each search text field. Keys are refering to the field HTML id. Currently MySQL and mongoDB (this is in beta) are supported.<br><br>
+MySQL data source configs:
+<table width='100%'>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host</td>
+<td>String</td>
+<td>Yes</td>
+<td>MySQL database host. It usually is 'localhost'.</td>
+</tr>
+<tr>
+<td>database</td>
+<td>String</td>
+<td>Yes</td>
+<td>MySQL database name.</td>
+</tr>
+<tr>
+<td>username</td>
+<td>String</td>
+<td>Yes</td>
+<td>MySQL database username.</td>
+</tr>
+<tr>
+<td>pass</td>
+<td>String</td>
+<td>Yes</td>
+<td>MySQL database username password.</td>
+</tr>
+<tr>
+<td>table</td>
+<td>String</td>
+<td>Yes</td>
+<td>MySQL database table that the live search searches in.</td>
+</tr>
+<tr>
+<td>searchColumns</td>
+<td>Array</td>
+<td>Yes</td>
+<td>Search columns that the live search searches in. It can be one or many. e.g. array('column_name_1', 'column_name_2')</td>
+</tr>
+<tr>
+<td>orderBy</td>
+<td>String</td>
+<td>No</td>
+<td>Column that the result is ordered based in it.</td>
+</tr>
+<tr>
+<td>orderDirection</td>
+<td>String</td>
+<td>No</td>
+<td>Order direction: 'ASC' or 'DESC' for 'orderBy'. Default value: ASC</td>
+</tr>
+<tr>
+<td>filterResult</td>
+<td>Array</td>
+<td>No</td>
+<td>Columns that need to be in the result. If it is empty all the columns will be returned.</td>
+</tr>
+<tr>
+<td>comparisonOperator</td>
+<td>String</td>
+<td>Yes</td>
+<td>Search query comparison operator. Possible values for comparison operators are: 'LIKE' and '='.</td>
+</tr>
+<tr>
+<td>searchPattern</td>
+<td>String</td>
+<td>Yes</td>
+<td>This is used to specify how the query is searched. possible values are: `q`, `*q`, `q*`, `*q*`.</td>
+</tr>
+<tr>
+<td>caseSensitive</td>
+<td>String</td>
+<td>Yes</td>
+<td>Search query case sensitivity</td>
+</tr>
+<tr>
+<td>maxResult</td>
+<td>Integer</td>
+<td>No</td>
+<td>This is used to limit the maximum number of result.</td>
+</tr>
+<tr>
+<td>displayHeader</td>
+<td>Array</td>
+<td>No</td>
+<td>This is used to display or hide the header in the result. If 'active' is set to true header is displayed. Also, it is possible to map columns to different titles.</td>
+</tr>
+<tr>
+<td>type</td>
+<td>String</td>
+<td>Yes</td>
+<td>Type of the datasource. Currently possible values are: 'mysql' or 'mongo'.</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td>antiBot</td>
+<td>String</td>
+<td>Yes</td>
+<td>This is used as a security technique to prevent form submissions from those bots that do not use JavaScript. In this technique, a hidden field is populated using jQuery with this value. It can have any value, but it MUST be the same as `form_anti_bot` option passed to the jQuery plugin. By default it is set to `ajaxlivesearch_guard`.</td>
+</tr>
+<tr>
+<td>searchStartTimeOffset</td>
+<td>Integer</td>
+<td>Yes</td>
+<td>This is used for another security technique against bots. Some bots immediately submit a form once the page is finished loading. However, for human beings it takes more time to fill a field. By default this parameter is set to 3 seconds. Assigning more than 3 seconds is not recommended.</td>
+</tr>
+<tr>
+<td>maxInputLength</td>
+<td>Integer</td>
+<td>Yes</td>
+<td>This specifies the maximum length of characters in search field.</td>
+</tr>
+</tbody>
+</table>
 
 ## License
 
