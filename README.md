@@ -22,7 +22,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
 4. Change the url for `Access-Control-Allow-Origin header` in `process_livesearch.php` that is located in `ajax` folder.
 
-5. Make sure php files: `Handler.php` and `Config.php` are included in the php page and you have these lines at the very top of the file (Check `index.php`).
+5. Make sure php files: `Handler.php` and `Config.php` are included in the php page and you have these lines at the very top of the file (Check `index.php`):
 
 	```
 	if (session_id() == '') {
