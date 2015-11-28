@@ -18,7 +18,7 @@ IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
 2. Specify the required configurations specially database configurations in `Config.php`. The file is located in `core` folder and contains back-end settings for the plugin. Check PHP Configs table for more details.
 
-3. Include `ajaxlivesearch.min.js` or `ajaxlivesearch.js` located in `js` folder in your project.
+3. Include `ajaxlivesearch.min.js` or `ajaxlivesearch.js` located in `js` folder and `ajaxlivesearch.min.css` or `ajaxlivesearch.css` located in `css` in your project.
 
 4. Change the url for `Access-Control-Allow-Origin header` in `process_livesearch.php` that is located in `ajax` folder.
 
