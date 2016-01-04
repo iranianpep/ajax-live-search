@@ -247,6 +247,9 @@ jQuery("#ls_query").ajaxlivesearch({
 <tr>
 <td>onResultClick</td>
 </tr>
+<tr>
+<td>onResultEnter</td>
+</tr>
 </tbody>
 </table>
 
