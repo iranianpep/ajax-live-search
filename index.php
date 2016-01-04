@@ -66,6 +66,9 @@ jQuery(document).ready(function(){
 
             // hide the result
             jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
+        },
+        onResultEnter: function(e, data) {
+            // do whatever you want
         }
     });
 })

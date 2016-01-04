@@ -409,6 +409,14 @@
                 if ($.trim(query.val()).length && keycode === 13) {
                     if (!(result.is(":visible") || result.is(":animated")) || parseInt(result.find("tr").length) === 0) {
                         show_result(result, ls);
+                    } else {
+                        if (query.selected_row !== undefined) {
+                            var data = {selected: $(query.selected_row), this: this};
+
+                            if (options.onResultEnter !== undefined) {
+                                options.onResultEnter(event, data);
+                            }
+                        }
                     }
                 } else {
                     // If something other than enter is pressed start search immediately
