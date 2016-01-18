@@ -59,7 +59,7 @@ jQuery(document).ready(function(){
         maxInput: <?php echo $maxInputLength; ?>,
         onResultClick: function(e, data) {
             // get the index 1 (second column) value
-            var selectedOne = jQuery(data.selected).find('td').eq('1').html();
+            var selectedOne = jQuery(data.selected).find('td').eq('1').text();
 
             // set the input value
             jQuery('.mySearch').val(selectedOne);
@@ -69,6 +69,10 @@ jQuery(document).ready(function(){
         },
         onResultEnter: function(e, data) {
             // do whatever you want
+            // jQuery(".mySearch").trigger('ajaxlivesearch:search', {query: 'test'});
+        },
+        onAjaxComplete: function(e, data) {
+
         }
     });
 })

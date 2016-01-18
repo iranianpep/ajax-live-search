@@ -20,6 +20,7 @@
             url: "ajax/process_livesearch.php",
             // This should be the same as the same parameter's value in config file
             form_anti_bot: "ajaxlivesearch_guard",
+            cache: false,
             /**
              * Beginning of classes
              */
@@ -214,6 +215,7 @@
                                 url: ls.url,
                                 data: $(form).serialize(),
                                 dataType: "json",
+                                cache: ls.cache,
                                 success: function (response) {
                                     if (response.status === 'success') {
                                         var responseResultObj = $.parseJSON(response.result);
@@ -279,7 +281,7 @@
 
                                     remove_footer(footer, result);
                                 },
-                                complete: function () {
+                                complete: function (e) {
                                     /*
                                      Because this is a asynchronous request
                                      it may add result even after there is no query in the search field
@@ -290,6 +292,10 @@
 
                                     $(search_object).removeClass('ajax_loader');
 
+                                    if (options.onAjaxComplete !== undefined) {
+                                        var data = {this: this};
+                                        options.onAjaxComplete(e, data);
+                                    }
                                 }
                             });
                             // End of request
@@ -633,6 +639,11 @@
              */
             $(this).on('ajaxlivesearch:hide_result', function () {
                 hide_result(result, ls);
+            });
+
+            $(this).on('ajaxlivesearch:search', function (e, params) {
+                $(this).val(params.query);
+                search_query(this, form, ls, true, true);
             });
         });
 

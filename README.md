@@ -78,6 +78,12 @@ jQuery("#ls_query").ajaxlivesearch({
 <td>Default: ajax/process_livesearch.php.</td>
 </tr>
 <tr>
+<td>cache</td>
+<td>Boolean</td>
+<td>No</td>
+<td>This refers to Ajax request caching. Default: false</td>
+</tr>
+<tr>
 <td>form_anti_bot</td>
 <td>String</td>
 <td>No</td>
@@ -250,6 +256,9 @@ jQuery("#ls_query").ajaxlivesearch({
 <tr>
 <td>onResultEnter</td>
 </tr>
+<tr>
+<td>onAjaxComplete</td>
+</tr>
 </tbody>
 </table>
 
@@ -269,6 +278,13 @@ jQuery(".mySearch").ajaxlivesearch({
 
             // hide the result
             jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
+        },
+        onResultEnter: function(e, data) {
+            // do whatever you want
+            // jQuery(".mySearch").trigger('ajaxlivesearch:search', {query: 'test'});
+        },
+        onAjaxComplete: function(e, data) {
+            // do whatever you want
         }
     });
 ```
@@ -282,6 +298,9 @@ jQuery(".mySearch").ajaxlivesearch({
 <tbody>
 <tr>
 <td>ajaxlivesearch:hide_result</td>
+</tr>
+<tr>
+<td>ajaxlivesearch:search</td>
 </tr>
 </tbody>
 </table>
