@@ -477,6 +477,9 @@
                             }
                         }
                     }
+
+                    // prevent cursor from jumping to beginning or end of input
+                    return false;
                 }
             });
 
