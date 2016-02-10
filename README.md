@@ -4,7 +4,8 @@ AJAX Live Search is a jQuery plugin / PHP search form that searches and displays
 
 ## Demo
 
-[Check it it in action.](http://ajaxlivesearch.com)
+[Check it it in action.](http://ajaxlivesearch.com)<br>
+<img src='http://ajaxlivesearch.com/img/ajax_demo.gif'>
 
 ## Browser Support
 
