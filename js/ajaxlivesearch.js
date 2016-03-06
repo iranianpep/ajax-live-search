@@ -167,7 +167,7 @@
          * @param bypass_check_last_value
          * @param reset_current_page
          */
-        function search_query(search_object, form, options, bypass_check_last_value, reset_current_page) {
+        function search(search_object, form, options, bypass_check_last_value, reset_current_page) {
             var result = getFormInfo(form, 'result', options);
 
             if ($.trim(search_object.value).length && $.trim(search_object.value).length >= options.min_chars_to_search) {
@@ -422,7 +422,7 @@
                     }
                 } else {
                     // If something other than enter is pressed start search immediately
-                    search_query(this, form, ls, false, true);
+                    search(this, form, ls, false, true);
                 }
             });
 
@@ -483,7 +483,7 @@
             query.on('focus', function () {
                 // check if the result is not empty show it
                 if ($.trim(query.val()).length && (result.is(":hidden") || result.is(":animated")) && result.find("tr").length !== 0) {
-                    search_query(this, form, ls, false, true);
+                    search(this, form, ls, false, true);
                     show_result(result, ls);
                 }
             });
@@ -537,7 +537,7 @@
                 current_page_lbl.html(new_current_page);
 
                 // search again
-                search_query(query[0], form, ls, true, false);
+                search(query[0], form, ls, true, false);
             });
 
             // Search again when the items per page dropdown is changed
@@ -546,7 +546,7 @@
                  * we need to pass a DOM Element: query[0]
                  * In this case last value should not check against the current one
                  */
-                search_query(query[0], form, ls, true, true);
+                search(query[0], form, ls, true, true);
             });
 
             result.css({left: query.position().left + 1, width: query.outerWidth() - 2});
@@ -642,7 +642,7 @@
 
             $(this).on('ajaxlivesearch:search', function (e, params) {
                 $(this).val(params.query);
-                search_query(this, form, ls, true, true);
+                search(this, form, ls, true, true);
             });
         });
 
