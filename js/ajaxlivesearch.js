@@ -50,8 +50,8 @@
              */
             slide_speed: "fast",
             type_delay: 350,
-            placeholder: 'Type to start searching',
-            max_input: 20
+            max_input: 20,
+            min_chars_to_search: 0
         };
 
         ls = $.extend(ls, options);
@@ -170,13 +170,12 @@
         function search_query(search_object, form, options, bypass_check_last_value, reset_current_page) {
             var result = getFormInfo(form, 'result', options);
 
-            if ($.trim(search_object.value).length) {
+            if ($.trim(search_object.value).length && $.trim(search_object.value).length >= options.min_chars_to_search) {
                 /**
                  * If the previous value is different from the new one perform the search
                  * Otherwise ignore that. This is useful when user change cursor position on the search field
                  */
                 if (bypass_check_last_value || search_object.latest_value !== search_object.value) {
-
                     if (reset_current_page) {
                         var current_page = getFormInfo(form, 'current_page', options);
                         var current_page_lbl = getFormInfo(form, 'current_page_lbl', options);
@@ -304,7 +303,6 @@
                     }, ls.type_delay);
 
                 }
-
             } else {
                 // If search field is empty, hide the result
                 if (result.is(":visible") || result.is(":animated")) {
@@ -313,7 +311,6 @@
             }
 
             search_object.latest_value = search_object.value;
-
         }
 
         /**
@@ -325,7 +322,6 @@
          */
         function generateFormHtml(elem, ls) {
             var elem_id = elem.attr('id');
-            elem.attr('placeholder', ls.placeholder);
             elem.attr('autocomplete', 'off');
             elem.attr('name', 'ls_query');
             elem.addClass('ls_query');

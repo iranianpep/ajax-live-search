@@ -103,16 +103,16 @@ jQuery("#ls_query").ajaxlivesearch({
 <td>Default: 350</td>
 </tr>
 <tr>
-<td>placeholder</td>
-<td>String</td>
-<td>No</td>
-<td>Default: Type to start searching</td>
-</tr>
-<tr>
 <td>max_input</td>
 <td>Integer</td>
 <td>No</td>
 <td>Default: 20</td>
+</tr>
+<tr>
+<td>min_chars_to_search</td>
+<td>Integer</td>
+<td>No</td>
+<td>Minimum characters length to start searching. Default: 0</td>
 </tr>
 <tr>
 <td>page_ranges</td>

@@ -41,7 +41,7 @@ if (session_id() == '') {
 
 <!-- Search Form Demo -->
 <div style="clear: both">
-    <input type="text" class='mySearch' id="ls_query">
+    <input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ...">
 </div>
 <!-- /Search Form Demo -->
 
