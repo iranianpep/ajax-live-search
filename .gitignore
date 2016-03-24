@@ -1,1 +1,2 @@
-/nbproject/private/
+# ignore all files in the nbproject/ directory
+nbproject/

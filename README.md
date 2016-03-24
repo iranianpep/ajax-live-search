@@ -11,7 +11,7 @@ AJAX Live Search is a jQuery plugin / PHP search form that searches and displays
 
 ![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) | ![Chrome](https://raw.github.com/alrra/browser-logos/master/chrome/chrome_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/firefox/firefox_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/opera/opera_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/safari/safari_48x48.png)
 --- | --- | --- | --- | --- |
-IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
+IE 8+ ? | Chrome ? | Firefox ? | Opera ? | Safari ? |
 
 ## Getting started with Ajax Live Search
 
@@ -416,6 +416,12 @@ MySQL data source configs:
 <td>Array</td>
 <td>No</td>
 <td>This is used to display or hide the header in the result. If 'active' is set to true header is displayed. Also, it is possible to map columns to different titles.</td>
+</tr>
+<tr>
+<td>columnClass</td>
+<td>Array</td>
+<td>No</td>
+<td>It is possible to map columns to custom css class(es). Use ls_hide to hide column from table display.</td>
 </tr>
 <tr>
 <td>type</td>
