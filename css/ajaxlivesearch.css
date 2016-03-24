@@ -81,6 +81,11 @@
     color: red;
 }
 
+.ls_hide
+{
+    display: none;
+}
+
 .ls_result_footer
 {
     border-radius: 0px 0px 4px 4px;
@@ -94,6 +99,12 @@
 .ls_result_footer label
 {
     font-weight: normal;
+    display: inline;
+}
+
+.ls_result_footer select
+{
+    padding: 0 0 0 0;
 }
 
 .ls_result_footer .navigation
