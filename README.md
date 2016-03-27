@@ -418,6 +418,12 @@ MySQL data source configs:
 <td>This is used to display or hide the header in the result. If 'active' is set to true header is displayed. Also, it is possible to map columns to different titles.</td>
 </tr>
 <tr>
+<td>columnClass</td>
+<td>Array</td>
+<td>No</td>
+<td>It is possible to map columns to custom css class(es). Use ls_hide to hide column from table display.</td>
+</tr>
+<tr>
 <td>type</td>
 <td>String</td>
 <td>Yes</td>

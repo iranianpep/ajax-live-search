@@ -48,6 +48,12 @@ class Config
 //                        'your_second_column' => 'Your Desired Second Title'
                     )
                 ),
+                // add custom class to <td> and <th>
+                // To hide a column use class 'ls_hide'
+                'columnClass' => array(
+                //    'your_column_name_1' => 'Your Desired Class',
+                //    'column_name_2' => 'ls_hide'
+                ),
                 'type'               => 'mysql',
             ),
             'ls_query_2' => array(
@@ -81,6 +87,11 @@ class Config
                         //'name' => 'Name',
                         //'phone' => 'Phone'
                     )
+                ),
+                // add custom class to <td> and <th>
+                // To hide a column use class 'ls_hide'
+                'columnClass' => array(
+                //    'column_name_2' => 'ls_hide'
                 ),
                 'type'               => 'mysql',
             ),

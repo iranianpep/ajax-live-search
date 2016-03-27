@@ -308,27 +308,16 @@ class Handler
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
-                $headers = array_keys($results[0]);
-
-                $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : array();
-
-                // generate header
-                $HTML .= '<tr>';
-                foreach ($headers as $aHeader) {
-                    $aHeader = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
-                    $HTML .= "<th>{$aHeader}</th>";
-                }
-                $HTML .= '</tr>';
-            }
+            // calling a functions to build HTML with static::
+            // opens for late static binding and facilitates subclassing
             
-            // generate HTML
+            // if requested, generate column headers
+            $headers = array_keys($results[0]);
+            $HTML .= static::generateHeaderHtmlFromMySQL($headers, $dbInfo);
+            
+            // generate rows HTML
             foreach ($results as $result) {
-                $HTML .= '<tr>';
-                foreach ($result as $column) {
-                    $HTML .= "<td>{$column}</td>";
-                }
-                $HTML .= '</tr>';
+                $HTML .= static::generateItemHtmlFromMySQL($result, $dbInfo);
             }
         } else {
             // To prevent XSS prevention convert user input to HTML entities
@@ -346,6 +335,51 @@ class Handler
         );
     }
 
+    /**
+     * @param array $headers  Columnheaders from the SQL query
+     * @param array $dbInfo   Config data
+     * @return string        Returning headers tablerow html or ''
+     */
+    protected static function generateHeaderHtmlFromMySQL($headers, $dbInfo)
+    {
+        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
+        
+        $HTML = '';
+        if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
+            $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : array();
+
+            // generate header
+            $HTML .= '<tr>';
+            foreach ($headers as $aHeader) {
+                $aHeaderText = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
+                $HTML .= "<th".(array_key_exists($aHeader, $customClassArray)? ' class="'.$customClassArray[$aHeader].'"' : '').">{$aHeaderText}</th>";
+            }
+            $HTML .= '</tr>';
+        }
+
+        return $HTML;
+    }
+
+
+    /**
+     * @param array $result  Record from the SQL query
+     * @param array $dbInfo  Not used in this function, but included for use in custom subclasses
+     * @return string        Returning table row html
+     */
+    protected static function generateItemHtmlFromMySQL($result, $dbInfo)
+    {
+        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
+        
+        // generate HTML
+        $HTML = '<tr>';
+        foreach ($result as $columnName => $column) {
+            $HTML .= "<td".(array_key_exists($columnName, $customClassArray) ? ' class="'.$customClassArray[$columnName].'"' : '').">{$column}</td>";
+        }
+        $HTML .= '</tr>';
+
+        return $HTML;
+    }
+    
     /**
      * @param $dbInfo
      * @param $query
@@ -394,20 +428,9 @@ class Handler
 
         if ($number_of_result > 0) {
             foreach ($results as $result) {
-                $HTML .= '<tr>';
-                foreach ($result as $column) {
-                    if (is_array($column)) {
-                        $content = '';
-                        foreach ($column as $aColumnKey => $aColumnValue) {
-                            $content .= "{$aColumnKey} : {$aColumnValue} ";
-                        }
-
-                        $HTML .= "<td>{$content}</td>";
-                    } else {
-                        $HTML .= "<td>{$column}</td>";
-                    }
-                }
-                $HTML .= '</tr>';
+                // calling a static function to build tablerow
+                // This opens for late static binding and facilitates subclassing
+                $HTML .= static::generateItemHtmlFromMongo($result, $dbInfo);
             }
         } else {
             // To prevent XSS prevention convert user input to HTML entities
@@ -425,6 +448,31 @@ class Handler
         );
     }
 
+    /**
+     * @param array $result  Record from the SQL query
+     * @param array $dbInfo   Not used in this function, but included for use in custom subclasses
+     * @return string        Returning table row html
+     */
+    protected static function generateItemHtmlFromMongo ($result, $dbInfo){
+        
+        $HTML = '<tr>';
+        foreach ($result as $column) {
+            if (is_array($column)) {
+                $content = '';
+                foreach ($column as $aColumnKey => $aColumnValue) {
+                    $content .= "{$aColumnKey} : {$aColumnValue} ";
+                }
+
+                $HTML .= "<td>{$content}</td>";
+            } else {
+                $HTML .= "<td>{$column}</td>";
+            }
+        }
+        $HTML .= '</tr>';
+        
+        return $HTML;
+    }
+    
     /**
      * @return string
      */
