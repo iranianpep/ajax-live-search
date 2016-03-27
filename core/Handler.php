@@ -308,8 +308,8 @@ class Handler
             $stmt->execute();
             $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            //calling a functions to build HTML with static:: 
-            //opens for late static binding and facilitates subclassing
+            // calling a functions to build HTML with static::
+            // opens for late static binding and facilitates subclassing
             
             // if requested, generate column headers
             $headers = array_keys($results[0]);
@@ -317,9 +317,7 @@ class Handler
             
             // generate rows HTML
             foreach ($results as $result) {
-
                 $HTML .= static::generateItemHtmlFromMySQL($result, $dbInfo);
-
             }
         } else {
             // To prevent XSS prevention convert user input to HTML entities
@@ -338,18 +336,16 @@ class Handler
     }
 
     /**
-     * 
-     * @param type $headers  Columnheaders from the SQL query
-     * @param type $dbInfo   Config data
+     * @param array $headers  Columnheaders from the SQL query
+     * @param array $dbInfo   Config data
      * @return string        Returning headers tablerow html or ''
      */
-    protected static function generateHeaderHtmlFromMySQL($headers,$dbInfo){
-
-        $customClassArray = ( isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array() );
+    protected static function generateHeaderHtmlFromMySQL($headers, $dbInfo)
+    {
+        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
         
         $HTML = '';
         if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
-            
             $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : array();
 
             // generate header
@@ -360,28 +356,28 @@ class Handler
             }
             $HTML .= '</tr>';
         }
-        return $HTML;       
+
+        return $HTML;
     }
 
 
     /**
-     * 
-     * @param type $result   Record from the SQL query
-     * @param type $dbInfo   Not used in this function, but included for use in custom subclasses
+     * @param array $result  Record from the SQL query
+     * @param array $dbInfo  Not used in this function, but included for use in custom subclasses
      * @return string        Returning table row html
      */
-    protected static function generateItemHtmlFromMySQL ($result, $dbInfo){
-        
-        $customClassArray = ( isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array() );
+    protected static function generateItemHtmlFromMySQL($result, $dbInfo)
+    {
+        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
         
         // generate HTML
         $HTML = '<tr>';
-        foreach ($result as $columnName=>$column) {
-            $HTML .= "<td".(array_key_exists($columnName, $customClassArray)? ' class="'.$customClassArray[$columnName].'"' : '').">{$column}</td>";
+        foreach ($result as $columnName => $column) {
+            $HTML .= "<td".(array_key_exists($columnName, $customClassArray) ? ' class="'.$customClassArray[$columnName].'"' : '').">{$column}</td>";
         }
         $HTML .= '</tr>';
-        return $HTML;              
-        
+
+        return $HTML;
     }
     
     /**
@@ -432,8 +428,8 @@ class Handler
 
         if ($number_of_result > 0) {
             foreach ($results as $result) {
-                //calling a static function to build tablerow
-                //This opens for late static binding and facilitates subclassing
+                // calling a static function to build tablerow
+                // This opens for late static binding and facilitates subclassing
                 $HTML .= static::generateItemHtmlFromMongo($result, $dbInfo);
             }
         } else {
@@ -452,10 +448,9 @@ class Handler
         );
     }
 
-        /**
-     * 
-     * @param type $result   Record from the SQL query
-     * @param type $dbInfo   Not used in this function, but included for use in custom subclasses
+    /**
+     * @param array $result  Record from the SQL query
+     * @param array $dbInfo   Not used in this function, but included for use in custom subclasses
      * @return string        Returning table row html
      */
     protected static function generateItemHtmlFromMongo ($result, $dbInfo){
