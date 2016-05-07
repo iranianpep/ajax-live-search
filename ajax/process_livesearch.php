@@ -1,4 +1,5 @@
 <?php
+
 use AjaxLiveSearch\core\Handler;
 
 header('Access-Control-Allow-Origin: http://ajaxlivesearch.com');
@@ -29,21 +30,21 @@ if (!Handler::verifySessionValue('token', $_POST['ls_token']) ||
     Handler::formResponse('failed', 'Error: Please refresh the page. It seems that your session is expired.');
 }
 
-    try {
-        // 4. Start looking for the query
-        $result = json_encode(Handler::getResult(
-            $_POST['ls_query_id'],
-            $_POST['ls_query'],
-            (int) $_POST['ls_current_page'],
-            (int) $_POST['ls_items_per_page']
-        ));
-    } catch (\Exception $e) {
-        $catchedError = $e->getMessage();
-    }
+try {
+    // 4. Start looking for the query
+    $result = json_encode(Handler::getResult(
+        $_POST['ls_query_id'],
+        $_POST['ls_query'],
+        (int) $_POST['ls_current_page'],
+        (int) $_POST['ls_items_per_page']
+    ));
+} catch (\Exception $e) {
+    $caughtError = $e->getMessage();
+}
 
-    if (empty($catchedError)) {
-        // 5. Return the result
-        Handler::formResponse('success', 'Successful request', $result);
-    } else {
-        Handler::formResponse('failed', $catchedError);
-    }
+if (empty($caughtError)) {
+    // 5. Return the result
+    Handler::formResponse('success', 'Successful request', $result);
+} else {
+    Handler::formResponse('failed', $caughtError);
+}

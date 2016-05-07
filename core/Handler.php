@@ -91,6 +91,7 @@ class Handler
         $message = "<tr><td class='{$css_class}'>{$message}</td></tr>";
 
         echo json_encode(array('status' => $status, 'message' => $message, 'result' => $result));
+        exit;
     }
 
     /**
