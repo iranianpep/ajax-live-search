@@ -45,7 +45,7 @@ Assuming you have this text field:
 jQuery("#ls_query").ajaxlivesearch({
         loaded_at: <?php echo $time; ?>,
         token: <?php echo "'" . $token . "'"; ?>,
-        maxInput: <?php echo $maxInputLength; ?>,
+        max_input: <?php echo $maxInputLength; ?>,
     });
 	```
 
