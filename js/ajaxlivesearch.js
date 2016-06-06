@@ -276,7 +276,7 @@
 
                                 },
                                 error: function () {
-                                    result.find('table tbody').html('Something went wront. Please refresh the page.');
+                                    result.find('table tbody').html('Something went wrong. Please refresh the page.');
 
                                     remove_footer(footer, result);
                                 },
