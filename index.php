@@ -56,7 +56,7 @@ jQuery(document).ready(function(){
 	jQuery(".mySearch").ajaxlivesearch({
         loaded_at: <?php echo $time; ?>,
         token: <?php echo "'" . $token . "'"; ?>,
-        maxInput: <?php echo $maxInputLength; ?>,
+        max_input: <?php echo $maxInputLength; ?>,
         onResultClick: function(e, data) {
             // get the index 1 (second column) value
             var selectedOne = jQuery(data.selected).find('td').eq('1').text();
