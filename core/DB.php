@@ -22,6 +22,7 @@ class DB
     private function __construct($dbInfo)
     {
         try {
+            // For MySQL version 5.5.3 or greater you can use 'utf8mb4' encoding instead of 'utf8'
             self::$db = new \PDO(
                 'mysql:host=' . $dbInfo['host'] . ';dbname=' . $dbInfo['database'] . ';charset=utf8',
                 $dbInfo['username'],
