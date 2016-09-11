@@ -17,7 +17,7 @@
          */
 
         var ls = {
-            url: "ajax/process_livesearch.php",
+            url: "core/AjaxProcessor.php",
             // This should be the same as the same parameter's value in config file
             form_anti_bot: "ajaxlivesearch_guard",
             cache: false,
@@ -86,7 +86,8 @@
          * @param page_range
          */
         function get_minimum_option_value(page_range) {
-            var minimumOptionValue, i;
+            var minimumOptionValue;
+            var i;
             var all_options = page_range.find('option');
             for (i = 0; i < all_options.length; i += 1) {
                 if (minimumOptionValue === undefined && parseInt(all_options[i].value) !== 0) {
@@ -117,24 +118,24 @@
             var find = '.' + options.current_page_hidden_class;
 
             switch (key) {
-            case 'result':
-                return form.find('.' + options.result_wrapper_class);
-            case 'footer':
-                return form.find('.' + options.footer_class);
-            case 'arrow':
-                return form.find('.' + options.arrow_class);
-            case 'navigation':
-                return form.find('.' + options.navigation_class);
-            case 'current_page':
-                return form.find(find);
-            case 'current_page_lbl':
-                return form.find('.' + options.current_page_lbl_class);
-            case 'total_page_lbl':
-                return form.find('.' + options.total_page_lbl_class);
-            case 'page_range':
-                return form.find('.' + options.page_range_class);
-            default:
-                throw 'Key: ' + key + ' is not found';
+                case 'result':
+                    return form.find('.' + options.result_wrapper_class);
+                case 'footer':
+                    return form.find('.' + options.footer_class);
+                case 'arrow':
+                    return form.find('.' + options.arrow_class);
+                case 'navigation':
+                    return form.find('.' + options.navigation_class);
+                case 'current_page':
+                    return form.find(find);
+                case 'current_page_lbl':
+                    return form.find('.' + options.current_page_lbl_class);
+                case 'total_page_lbl':
+                    return form.find('.' + options.total_page_lbl_class);
+                case 'page_range':
+                    return form.find('.' + options.page_range_class);
+                default:
+                    throw 'Key: ' + key + ' is not found';
             }
         }
 
@@ -208,11 +209,22 @@
                             var page_range = getFormInfo(form, 'page_range', options);
                             var footer = getFormInfo(form, 'footer', options);
 
+                            var toPostData = $(form).serializeArray();
+                            var customData = $(search_object).data();
+
+                            $.each(customData, function(k, v){
+                                var dataObj = {};
+                                dataObj['name'] = k;
+                                dataObj['value'] = v;
+
+                                toPostData.push(dataObj);
+                            });
+
                             // Send the request
                             $.ajax({
                                 type: "post",
                                 url: ls.url,
-                                data: $(form).serialize(),
+                                data: toPostData,
                                 dataType: "json",
                                 cache: ls.cache,
                                 success: function (response) {
@@ -413,7 +425,7 @@
                         show_result(result, ls);
                     } else {
                         if (query.selected_row !== undefined) {
-                            var data = {selected: $(query.selected_row), this: this};
+                            var data = {selected: $(query.selected_row), this: this, searchField: query};
 
                             if (options.onResultEnter !== undefined) {
                                 options.onResultEnter(event, data);
@@ -626,7 +638,7 @@
              * Custom Events
              */
             $(result).on('click', 'tr', function (e) {
-                var data = {selected: $(query.selected_row), this: this};
+                var data = {selected: $(query.selected_row), this: this, searchField: query};
 
                 if (options.onResultClick !== undefined) {
                     options.onResultClick(e, data);

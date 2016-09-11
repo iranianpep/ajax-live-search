@@ -18,38 +18,52 @@ Thanks to [BrowserStack](http://browserstack.com) for supporting this project.
 ## Getting started with Ajax Live Search
 
 Assuming you have this text field:
-`<input type="text" class='mySearch' id="ls_query">`
+`<input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ...">`
 
-1. Copy the folders including `ajax`, `core`, `css`, `font`, `img` and `js` to your project.
+1. Copy the folders including `core`, `css`, `font`, `img`, `js` and `templates` to your project.
 
-2. Specify the required configurations specially database configurations in `Config.php`. The file is located in `core` folder and contains back-end settings for the plugin. Check PHP Configs table for more details.
+2. Specify the required configurations specially database configurations in `core/Config.template.php` and change the file to `Config.php`. This file contains all the back-end settings for the plugin that have been explained in PHP Configs table.
 
-3. Include `ajaxlivesearch.min.js` or `ajaxlivesearch.js` located in `js` folder and `ajaxlivesearch.min.css` or `ajaxlivesearch.css` located in `css` in your project.
+3. Include `js/ajaxlivesearch.min.js` or `js/ajaxlivesearch.js` and `css/ajaxlivesearch.min.css` or `css/ajaxlivesearch.css` in your page.
 
-4. Change the url for `Access-Control-Allow-Origin header` in `process_livesearch.php` that is located in `ajax` folder.
+4. Change the url for `Access-Control-Allow-Origin header` in `core/AjaxProcessor.php`.
 
-5. Make sure php files: `Handler.php` and `Config.php` are included in the php page and you have these lines at the very top of the file (Check `index.php`):
+5. Make sure `core/Handler.php` and `core/Config.php` are included in your (PHP) page and you have these lines at the very top of the file (Check `index.php`):
 
 	```
-	if (session_id() == '') {
-    	session_start();
-	}
-
-	Handler::getJavascriptAntiBot();
-	$token = Handler::getToken();
-	$time = time();
-	$maxInputLength = Config::getConfig('maxInputLength');
+	use AjaxLiveSearch\core\Config;
+    use AjaxLiveSearch\core\Handler;
+    
+    if (session_id() == '') {
+        session_start();
+    }
+    
+    $handler = new Handler();
+    $handler->getJavascriptAntiBot();
 	```
 	
 6. Lastly, hook the plugin to the text field and pass required options (loaded_at & token):
 
 	```
 jQuery("#ls_query").ajaxlivesearch({
-        loaded_at: <?php echo $time; ?>,
-        token: <?php echo "'" . $token . "'"; ?>,
-        max_input: <?php echo $maxInputLength; ?>,
+        loaded_at: <?php echo time(); ?>,
+        token: <?php echo "'" . $handler->getToken() . "'"; ?>,
+        max_input: <?php echo Config::getConfig('maxInputLength'); ?>,
     });
 	```
+
+You can also post additional parameters to the server if you need. To achieve this you should add `data` attributes to the search input:
+
+    ```
+<input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ..." data-additionalData="hello world!">
+    ```
+
+For example, in this case you can access the data attribute in PHP like this:
+    
+    ```
+    // key is transformed to lowercase
+$additionalData = $_POST['additionaldata'];
+    ```
 
 ## jQuery Options
 <table width='100%'>
@@ -269,27 +283,27 @@ Example:
 
 ```
 jQuery(".mySearch").ajaxlivesearch({
-        loaded_at: <?php echo $time; ?>,
-        token: <?php echo "'" . $token . "'"; ?>,
-        maxInput: <?php echo $maxInputLength; ?>,
-        onResultClick: function(e, data) {
-            // get the index 1 (second column) value
-            var selectedOne = jQuery(data.selected).find('td').eq('1').text();
+    loaded_at: <?php echo time(); ?>,
+    token: <?php echo "'" . $handler->getToken() . "'"; ?>,
+    max_input: <?php echo Config::getConfig('maxInputLength'); ?>,
+    onResultClick: function(e, data) {
+        // get the index 1 (second column) value
+        var selectedOne = jQuery(data.selected).find('td').eq('1').text();
 
-            // set the input value
-            jQuery('.mySearch').val(selectedOne);
+        // set the input value
+        jQuery('#ls_query').val(selectedOne);
 
-            // hide the result
-            jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
-        },
-        onResultEnter: function(e, data) {
-            // do whatever you want
-            // jQuery(".mySearch").trigger('ajaxlivesearch:search', {query: 'test'});
-        },
-        onAjaxComplete: function(e, data) {
-            // do whatever you want
-        }
-    });
+        // hide the result
+        jQuery("#ls_query").trigger('ajaxlivesearch:hide_result');
+    },
+    onResultEnter: function(e, data) {
+        // do whatever you want
+        // jQuery("#ls_query").trigger('ajaxlivesearch:search', {query: 'test'});
+    },
+    onAjaxComplete: function(e, data) {
+
+    }
+});
 ```
 ## Custom Trigger
 <table width='100%'>
@@ -420,12 +434,6 @@ MySQL data source configs:
 <td>This is used to display or hide the header in the result. If 'active' is set to true header is displayed. Also, it is possible to map columns to different titles.</td>
 </tr>
 <tr>
-<td>columnClass</td>
-<td>Array</td>
-<td>No</td>
-<td>It is possible to map columns to custom css class(es). Use ls_hide to hide column from table display.</td>
-</tr>
-<tr>
 <td>type</td>
 <td>String</td>
 <td>Yes</td>
@@ -452,6 +460,12 @@ MySQL data source configs:
 <td>Integer</td>
 <td>Yes</td>
 <td>This specifies the maximum length of characters in search field.</td>
+</tr>
+<tr>
+<td>template</td>
+<td>String</td>
+<td>Yes</td>
+<td>This specifies the template name located in templates folder</td>
 </tr>
 </tbody>
 </table>

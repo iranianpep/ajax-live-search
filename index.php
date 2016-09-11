@@ -1,6 +1,8 @@
 <?php
-file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Handler.php') ? require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Handler.php' : die('There is no such a file: Handler.php');
-file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Config.php') ? require_once __DIR__ . DIRECTORY_SEPARATOR . 'core' . DIRECTORY_SEPARATOR . 'Config.php' : die('There is no such a file: Config.php');
+
+$DS = DIRECTORY_SEPARATOR;
+file_exists(__DIR__ . $DS . 'core' . $DS . 'Handler.php') ? require_once __DIR__ . $DS . 'core' . $DS . 'Handler.php' : die('Handler.php not found');
+file_exists(__DIR__ . $DS . 'core' . $DS . 'Config.php') ? require_once __DIR__ . $DS . 'core' . $DS . 'Config.php' : die('Config.php not found');
 
 use AjaxLiveSearch\core\Config;
 use AjaxLiveSearch\core\Handler;
@@ -9,10 +11,8 @@ if (session_id() == '') {
     session_start();
 }
 
-    Handler::getJavascriptAntiBot();
-    $token = Handler::getToken();
-    $time = time();
-    $maxInputLength = Config::getConfig('maxInputLength');
+    $handler = new Handler();
+    $handler->getJavascriptAntiBot();
 ?>
 
 <!DOCTYPE html>
@@ -49,27 +49,27 @@ if (session_id() == '') {
 <script src="js/jquery-1.11.1.min.js"></script>
 
 <!-- Live Search Script -->
-<script type="text/javascript" src="js/ajaxlivesearch.js"></script>
+<script type="text/javascript" src="js/ajaxlivesearch.min.js"></script>
 
 <script>
 jQuery(document).ready(function(){
-	jQuery(".mySearch").ajaxlivesearch({
-        loaded_at: <?php echo $time; ?>,
-        token: <?php echo "'" . $token . "'"; ?>,
-        max_input: <?php echo $maxInputLength; ?>,
+    jQuery(".mySearch").ajaxlivesearch({
+        loaded_at: <?php echo time(); ?>,
+        token: <?php echo "'" . $handler->getToken() . "'"; ?>,
+        max_input: <?php echo Config::getConfig('maxInputLength'); ?>,
         onResultClick: function(e, data) {
-            // get the index 1 (second column) value
-            var selectedOne = jQuery(data.selected).find('td').eq('1').text();
+            // get the index 0 (first column) value
+            var selectedOne = jQuery(data.selected).find('td').eq('0').text();
 
             // set the input value
-            jQuery('.mySearch').val(selectedOne);
+            jQuery('#ls_query').val(selectedOne);
 
             // hide the result
-            jQuery(".mySearch").trigger('ajaxlivesearch:hide_result');
+            jQuery("#ls_query").trigger('ajaxlivesearch:hide_result');
         },
         onResultEnter: function(e, data) {
             // do whatever you want
-            // jQuery(".mySearch").trigger('ajaxlivesearch:search', {query: 'test'});
+            // jQuery("#ls_query").trigger('ajaxlivesearch:search', {query: 'test'});
         },
         onAjaxComplete: function(e, data) {
 

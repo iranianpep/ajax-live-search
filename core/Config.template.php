@@ -57,11 +57,6 @@ class Config
                     ]
                 ],
                 'type'               => 'mysql',
-                /**
-                 * If you need to pass additional inputs they should be included in additionalInputs
-                 * which is like a whitelist. Additional inputs are defined as a data attribute for the search field
-                 */
-                'additionalInputs' => []
             ],
             'ls_query_2' => [
                 'host'               => 'localhost',

@@ -1,8 +1,10 @@
 <?php
+
 namespace AjaxLiveSearch\core;
 
-file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'DB.php') ? require_once __DIR__ . DIRECTORY_SEPARATOR . 'DB.php' : die('There is no such a file: DB.php');
-file_exists(__DIR__ . DIRECTORY_SEPARATOR . 'Config.php') ? require_once __DIR__ . DIRECTORY_SEPARATOR . 'Config.php' : die('There is no such a file: Config.php');
+$DS = DIRECTORY_SEPARATOR;
+file_exists(__DIR__ . $DS . 'DB.php') ? require_once __DIR__ . $DS . 'DB.php' : die('DB.php not found');
+file_exists(__DIR__ . $DS . 'Config.php') ? require_once __DIR__ . $DS . 'Config.php' : die('Config.php not found');
 
 if (count(get_included_files()) === 1) {
     exit('Direct access not permitted.');
@@ -22,26 +24,25 @@ class Handler
      *
      * @return string
      */
-    public static function getToken()
+    public function getToken()
     {
         // create a form token to protect against CSRF
-        $token = bin2hex(openssl_random_pseudo_bytes(32));
-        return $_SESSION['ls_session']['token'] = $token;
+        return $_SESSION['ls_session']['token'] = bin2hex(openssl_random_pseudo_bytes(32));
     }
 
     /**
      * receives a posted variable and checks it against the same one in the session
      *
-     * @param  $session_parameter
-     * @param  $session_value
+     * @param  $sessionParameter
+     * @param  $sessionValue
      * @return bool
      */
-    public static function verifySessionValue($session_parameter, $session_value)
+    public function verifySessionValue($sessionParameter, $sessionValue)
     {
-        $white_list = array('token', 'anti_bot');
+        $whiteList = ['token', 'anti_bot'];
 
-        if (in_array($session_parameter, $white_list) &&
-            $_SESSION['ls_session'][$session_parameter] === $session_value
+        if (in_array($sessionParameter, $whiteList) &&
+            $_SESSION['ls_session'][$sessionParameter] === $sessionValue
         ) {
             return true;
         } else {
@@ -52,22 +53,24 @@ class Handler
     /**
      * checks required fields, max length for search input and numbers for pagination
      *
-     * @param  $input_array
+     * @param  $inputArray
      * @return array
      */
-    public static function validateInput($input_array)
+    public function validateInput($inputArray)
     {
-        $error = array();
+        $error = [];
 
-        foreach ($input_array as $k => $v) {
-            if (!isset($v) || (trim($v) == '' && $v != '0') || $v == null) {
-                array_push($error, $k);
-            } elseif ($k === 'ls_current_page' || $k === 'ls_items_per_page') {
-                if ((int) $v < 0) {
+        $maxInputLength = Config::getConfig('maxInputLength');
+
+        if (!empty($inputArray)) {
+            foreach ($inputArray as $k => $v) {
+                if ($k === 'ls_query' && strlen($v) > $maxInputLength) {
                     array_push($error, $k);
+                } elseif ($k === 'ls_current_page' || $k === 'ls_items_per_page') {
+                    if ((int) $v < 0) {
+                        array_push($error, $k);
+                    }
                 }
-            } elseif ($k === 'ls_query' && strlen($v) > Config::getConfig('maxInputLength')) {
-                array_push($error, $k);
             }
         }
 
@@ -84,58 +87,62 @@ class Handler
      * @param $message
      * @param string     $result
      */
-    public static function formResponse($status, $message, $result = '')
+    public function formResponse($status, $message, $result = '')
     {
-        $css_class = ($status === 'failed') ? 'error' : 'success';
+        $cssClass = ($status === 'failed') ? 'error' : 'success';
 
-        $message = "<tr><td class='{$css_class}'>{$message}</td></tr>";
+        $message = "<tr><td class='{$cssClass}'>{$message}</td></tr>";
 
-        echo json_encode(array('status' => $status, 'message' => $message, 'result' => $result));
+        echo json_encode([
+            'status' => $status,
+            'message' => $message,
+            'result' => $result
+        ]);
         exit;
     }
 
     /**
-     * @param     $query_id: This is html id
+     * @param     $searchFieldId: This is html id
      * @param     $query
-     * @param int $current_page
-     * @param int $items_per_page
+     * @param int $currentPage
+     * @param int $perPage
      *
      * @return array
      * @throws \Exception
      */
-    public static function getResult($query_id, $query, $current_page = 1, $items_per_page = 0)
+    public function getData($searchFieldId, $query, $currentPage = 1, $perPage = 0)
     {
         // get data sources list
         $dataSources = Config::getConfig('dataSources');
 
-        if (!isset($dataSources[$query_id])) {
-            throw new \Exception("There is no data info for {$query_id}");
+        if (!isset($dataSources[$searchFieldId])) {
+            throw new \Exception("There is no data info for {$searchFieldId}");
         }
 
         // get info for the selected data source
-        $dbInfo = $dataSources[$query_id];
+        $dbInfo = $dataSources[$searchFieldId];
 
         switch ($dbInfo['type']) {
             case 'mysql':
-                return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
+                return $this->getDataFromMySQL($dbInfo, $query, $currentPage, $perPage);
                 break;
             case 'mongo':
-                return self::getDataFromMongo($dbInfo, $query, $current_page, $items_per_page);
+                return $this->getDataFromMongo($dbInfo, $query, $currentPage, $perPage);
                 break;
             default:
-                return self::getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page);
+                return $this->getDataFromMySQL($dbInfo, $query, $currentPage, $perPage);
         }
     }
 
     /**
      * @param  $dbInfo
      * @param  $query
-     * @param  $current_page
-     * @param  $items_per_page
+     * @param  $currentPage
+     * @param  $perPage
      * @throws \Exception
      * @return array
      */
-    private static function getDataFromMySQL($dbInfo, $query, $current_page, $items_per_page)
+    private function getDataFromMySQL($dbInfo, $query, $currentPage, $perPage)
     {
         // get connection
         $db = DB::getConnection($dbInfo);
@@ -180,16 +187,16 @@ class Handler
         if (!empty($whereClause)) {
             switch ($dbInfo['searchPattern']) {
                 case 'q':
-                    $search_query = $query;
+                    $searchQuery = $query;
                     break;
                 case '*q':
-                    $search_query = "%{$query}";
+                    $searchQuery = "%{$query}";
                     break;
                 case 'q*':
-                    $search_query = "{$query}%";
+                    $searchQuery = "{$query}%";
                     break;
                 case '*q*':
-                    $search_query = "%{$query}%";
+                    $searchQuery = "%{$query}%";
                     break;
                 default:
                     throw new \Exception('Search Pattern is not valid');
@@ -197,22 +204,22 @@ class Handler
 
             for ($i = 1; $i <= count($dbInfo['searchColumns']); ++$i) {
                 $toBindQuery = ':query' . $i;
-                $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                $stmt->bindParam($toBindQuery, $searchQuery, \PDO::PARAM_STR);
             }
         }
 
         $stmt->execute();
-        $number_of_result = (int) $stmt->fetch(\PDO::FETCH_COLUMN);
+        $resultNumber = (int) $stmt->fetch(\PDO::FETCH_COLUMN);
 
-        if (isset($dbInfo['maxResult']) && $number_of_result > $dbInfo['maxResult']) {
-            $number_of_result = $dbInfo['maxResult'];
+        if (isset($dbInfo['maxResult']) && $resultNumber > $dbInfo['maxResult']) {
+            $resultNumber = $dbInfo['maxResult'];
         }
 
         // initialize variables
         $HTML = '';
-        $number_of_pages = 1;
+        $pagesNumber = 1;
 
-        if (!empty($number_of_result) && $number_of_result !== 0) {
+        if (!empty($resultNumber) && $resultNumber !== 0) {
             if (!empty($dbInfo['filterResult'])) {
                 $fromColumn = implode(',', $dbInfo['filterResult']);
             } else {
@@ -226,7 +233,7 @@ class Handler
                 $orderBy = !empty($dbInfo['orderBy']) ? $dbInfo['orderBy'] : $dbInfo['searchColumns'][0];
 
                 // set order direction
-                $allowedOrderDirection = array('ASC', 'DESC');
+                $allowedOrderDirection = ['ASC', 'DESC'];
                 if (!empty($dbInfo['orderDirection']) && in_array($dbInfo['orderDirection'], $allowedOrderDirection)) {
                     $orderDirection = $dbInfo['orderDirection'];
                 } else {
@@ -236,7 +243,7 @@ class Handler
                 $baseSQL .= "{$whereClause} ORDER BY {$orderBy} {$orderDirection}";
             }
 
-            if ($items_per_page === 0) {
+            if ($perPage === 0) {
                 if (isset($dbInfo['maxResult'])) {
                     $baseSQL .= " LIMIT {$dbInfo['maxResult']}";
                 }
@@ -247,7 +254,7 @@ class Handler
                 if (!empty($whereClause)) {
                     for ($i = 1; $i <= count($dbInfo['searchColumns']); ++$i) {
                         $toBindQuery = ':query' . $i;
-                        $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                        $stmt->bindParam($toBindQuery, $searchQuery, \PDO::PARAM_STR);
                     }
                 }
             } else {
@@ -256,34 +263,34 @@ class Handler
                  *
                  * calculate total pages
                  */
-                if ($number_of_result < $items_per_page) {
-                    $number_of_pages = 1;
-                } elseif ($number_of_result > $items_per_page) {
-                    if ($number_of_result % $items_per_page === 0) {
-                        $number_of_pages = floor($number_of_result / $items_per_page);
+                if ($resultNumber < $perPage) {
+                    $pagesNumber = 1;
+                } elseif ($resultNumber > $perPage) {
+                    if ($resultNumber % $perPage === 0) {
+                        $pagesNumber = floor($resultNumber / $perPage);
                     } else {
-                        $number_of_pages = floor($number_of_result / $items_per_page) + 1;
+                        $pagesNumber = floor($resultNumber / $perPage) + 1;
                     }
                 } else {
-                    $number_of_pages = $number_of_result / $items_per_page;
+                    $pagesNumber = $resultNumber / $perPage;
                 }
 
                 if (isset($dbInfo['maxResult'])) {
                     // calculate the limit
-                    if ($current_page == 1) {
-                        if ($items_per_page > $dbInfo['maxResult']) {
+                    if ($currentPage == 1) {
+                        if ($perPage > $dbInfo['maxResult']) {
                             $limit = $dbInfo['maxResult'];
                         } else {
-                            $limit = $items_per_page;
+                            $limit = $perPage;
                         }
-                    } elseif ($current_page == $number_of_pages) {
+                    } elseif ($currentPage == $pagesNumber) {
                         // last page
-                        $limit = $dbInfo['maxResult'] - (($current_page - 1) * $items_per_page);
+                        $limit = $dbInfo['maxResult'] - (($currentPage - 1) * $perPage);
                     } else {
-                        $limit = $items_per_page;
+                        $limit = $perPage;
                     }
                 } else {
-                    $limit = $items_per_page;
+                    $limit = $perPage;
                 }
 
                 /*
@@ -291,7 +298,7 @@ class Handler
                  *
                  * calculate start
                  */
-                $start = ($current_page > 0) ? ($current_page - 1) * $items_per_page : 0;
+                $start = ($currentPage > 0) ? ($currentPage - 1) * $perPage : 0;
 
                 $stmt = $db->prepare(
                     "{$baseSQL} LIMIT {$start}, {$limit}"
@@ -300,96 +307,50 @@ class Handler
                 if (!empty($whereClause)) {
                     for ($i = 1; $i <= count($dbInfo['searchColumns']); ++$i) {
                         $toBindQuery = ':query' . $i;
-                        $stmt->bindParam($toBindQuery, $search_query, \PDO::PARAM_STR);
+                        $stmt->bindParam($toBindQuery, $searchQuery, \PDO::PARAM_STR);
                     }
                 }
             }
 
             // run the query and get the result
             $stmt->execute();
-            $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            // calling a functions to build HTML with static::
-            // opens for late static binding and facilitates subclassing
-            
             // if requested, generate column headers
-            $headers = array_keys($results[0]);
-            $HTML .= static::generateHeaderHtmlFromMySQL($headers, $dbInfo);
-            
-            // generate rows HTML
-            foreach ($results as $result) {
-                $HTML .= static::generateItemHtmlFromMySQL($result, $dbInfo);
+            $headers = array_keys($rows[0]);
+
+            if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
+                $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : [];
+
+                foreach ($headers as $aHeaderKey => $aHeader) {
+                    $aHeaderText = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
+
+                    $headers[$aHeaderKey] = $aHeaderText;
+                }
             }
         } else {
-            // To prevent XSS prevention convert user input to HTML entities
-            $query = htmlentities($query, ENT_NOQUOTES, 'UTF-8');
-
-            // there is no result - return an appropriate message.
-            $HTML .= "<tr><td>There is no result for \"{$query}\"</td></tr>";
+            $headers = [];
+            $rows = [];
         }
 
         // form the return
-        return array(
-            'html'              => $HTML,
-            'number_of_results' => (int) $number_of_result,
-            'total_pages'       => $number_of_pages,
-        );
-    }
-
-    /**
-     * @param array $headers  Columnheaders from the SQL query
-     * @param array $dbInfo   Config data
-     * @return string        Returning headers tablerow html or ''
-     */
-    protected static function generateHeaderHtmlFromMySQL($headers, $dbInfo)
-    {
-        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
-        
-        $HTML = '';
-        if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
-            $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : array();
-
-            // generate header
-            $HTML .= '<tr>';
-            foreach ($headers as $aHeader) {
-                $aHeaderText = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
-                $HTML .= "<th".(array_key_exists($aHeader, $customClassArray)? ' class="'.$customClassArray[$aHeader].'"' : '').">{$aHeaderText}</th>";
-            }
-            $HTML .= '</tr>';
-        }
-
-        return $HTML;
-    }
-
-
-    /**
-     * @param array $result  Record from the SQL query
-     * @param array $dbInfo  Not used in this function, but included for use in custom subclasses
-     * @return string        Returning table row html
-     */
-    protected static function generateItemHtmlFromMySQL($result, $dbInfo)
-    {
-        $customClassArray = isset($dbInfo['columnClass']) ? $dbInfo['columnClass'] : array();
-        
-        // generate HTML
-        $HTML = '<tr>';
-        foreach ($result as $columnName => $column) {
-            $HTML .= "<td".(array_key_exists($columnName, $customClassArray) ? ' class="'.$customClassArray[$columnName].'"' : '').">{$column}</td>";
-        }
-        $HTML .= '</tr>';
-
-        return $HTML;
+        return [
+            'headers'           => $headers,
+            'rows'              => $rows,
+            'number_of_results' => (int) $resultNumber,
+            'total_pages'       => $pagesNumber,
+        ];
     }
     
     /**
      * @param $dbInfo
      * @param $query
-     * @param $current_page
-     * @param $items_per_page
+     * @param $currentPage
+     * @param $perPage
      * @return array
      * @throws \Exception
      */
-    private static function getDataFromMongo($dbInfo, $query, $current_page, $items_per_page)
+    private function getDataFromMongo($dbInfo, $query, $currentPage, $perPage)
     {
         $mongoClient = new \MongoClient($dbInfo['server']);
         $database = $mongoClient->selectDB($dbInfo['database']);
@@ -397,87 +358,46 @@ class Handler
 
         $searchField = $dbInfo['searchField'];
         $regex = new \MongoRegex("/^{$query}/i");
-        $criteria = array($searchField => $regex);
+        $criteria = [$searchField => $regex];
         $results = $collection->find($criteria, $dbInfo['filterResult']);
 
         if (!$results instanceof \MongoCursor) {
             throw new \Exception('There is an issue getting data from Mongodb');
         }
 
-        $number_of_result = $results->count();
-        $start = ($current_page > 0) ? ($current_page - 1) * $items_per_page : 0;
-        $results = $results->limit($items_per_page)->skip($start);
-
-        $HTML = '';
+        $resultNumber = $results->count();
+        $start = ($currentPage > 0) ? ($currentPage - 1) * $perPage : 0;
+        $rows = $results->limit($perPage)->skip($start);
 
         /*
          * pagination
          *
          * calculate total pages
          */
-        if ($number_of_result < $items_per_page) {
-            $number_of_pages = 1;
-        } elseif ($number_of_result > $items_per_page) {
-            if ($number_of_result % $items_per_page === 0) {
-                $number_of_pages = floor($number_of_result / $items_per_page);
+        if ($resultNumber < $perPage) {
+            $pagesNumber = 1;
+        } elseif ($resultNumber > $perPage) {
+            if ($resultNumber % $perPage === 0) {
+                $pagesNumber = floor($resultNumber / $perPage);
             } else {
-                $number_of_pages = floor($number_of_result / $items_per_page) + 1;
+                $pagesNumber = floor($resultNumber / $perPage) + 1;
             }
         } else {
-            $number_of_pages = $number_of_result / $items_per_page;
-        }
-
-        if ($number_of_result > 0) {
-            foreach ($results as $result) {
-                // calling a static function to build tablerow
-                // This opens for late static binding and facilitates subclassing
-                $HTML .= static::generateItemHtmlFromMongo($result, $dbInfo);
-            }
-        } else {
-            // To prevent XSS prevention convert user input to HTML entities
-            $query = htmlentities($query, ENT_NOQUOTES, 'UTF-8');
-
-            // there is no result - return an appropriate message.
-            $HTML .= "<tr><td>There is no result for \"{$query}\"</td></tr>";
+            $pagesNumber = $resultNumber / $perPage;
         }
 
         // form the return
-        return array(
-            'html' => $HTML,
-            'number_of_results' => (int) $number_of_result,
-            'total_pages' => $number_of_pages,
-        );
-    }
-
-    /**
-     * @param array $result  Record from the SQL query
-     * @param array $dbInfo   Not used in this function, but included for use in custom subclasses
-     * @return string        Returning table row html
-     */
-    protected static function generateItemHtmlFromMongo ($result, $dbInfo){
-        
-        $HTML = '<tr>';
-        foreach ($result as $column) {
-            if (is_array($column)) {
-                $content = '';
-                foreach ($column as $aColumnKey => $aColumnValue) {
-                    $content .= "{$aColumnKey} : {$aColumnValue} ";
-                }
-
-                $HTML .= "<td>{$content}</td>";
-            } else {
-                $HTML .= "<td>{$column}</td>";
-            }
-        }
-        $HTML .= '</tr>';
-        
-        return $HTML;
+        return [
+            'rows' => $rows,
+            'number_of_results' => (int) $resultNumber,
+            'total_pages' => $pagesNumber,
+        ];
     }
     
     /**
      * @return string
      */
-    public static function getJavascriptAntiBot()
+    public function getJavascriptAntiBot()
     {
         return $_SESSION['ls_session']['anti_bot'] = Config::getConfig('antiBot');
     }
@@ -486,12 +406,58 @@ class Handler
      * Calculate the timestamp difference between the time page is loaded
      * and the time searching is started for the first time in seconds
      *
-     * @param  $page_loaded_at
+     * @param  $pageLoadedAt
      * @return bool
      */
-    public static function verifyBotSearched($page_loaded_at)
+    public function verifyBotSearched($pageLoadedAt)
     {
         // if searching starts less than start time offset it seems it's a Bot
-        return (time() - $page_loaded_at < Config::getConfig('searchStartTimeOffset')) ? false : true;
+        return (time() - $pageLoadedAt < Config::getConfig('searchStartTimeOffset')) ? false : true;
+    }
+
+    /**
+     * @param $dbInfo
+     * @param $query
+     * @param $currentPage
+     * @param $perPage
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function renderView($dbInfo, $query, $currentPage, $perPage)
+    {
+        $result = $this->getData($dbInfo, $query, $currentPage, $perPage);
+        $headers = $result['headers'];
+        $rows = $result['rows'];
+
+        $DS = DIRECTORY_SEPARATOR;
+
+        $templateName = Config::getConfig('template');
+        $templatePath = realpath(__DIR__ . $DS . '..' . $DS . 'templates' . $DS . $templateName);
+
+        if (file_exists($templatePath) !== true) {
+            throw new \Exception('Template file not found');
+        }
+
+        $html = include_once $templatePath;
+
+        return [
+            'html' => $html,
+            'number_of_results' => $result['number_of_results'],
+            'total_pages'       => $result['total_pages'],
+        ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAJAX()
+    {
+        $requestedWith = $_SERVER['HTTP_X_REQUESTED_WITH'];
+        if (!empty($requestedWith) && strtolower($requestedWith) == 'xmlhttprequest') {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
