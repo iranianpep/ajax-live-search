@@ -54,17 +54,13 @@ jQuery("#ls_query").ajaxlivesearch({
 
 You can also post additional parameters to the server if you need. To achieve this you should add `data` attributes to the search input:
 
-    ```
-<input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ..." data-additionalData="hello world!">
-    ```
+    <input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ..." data-additionalData="hello world!">
 
 For example, in this case you can access the data attribute in PHP like this:
     
-    ```
-// key is transformed to lowercase
-$additionalData = $_POST['additionaldata'];
-    ```
-
+    // key is transformed to lowercase
+    $additionalData = $_POST['additionaldata'];
+    
 ## jQuery Options
 <table width='100%'>
 <thead>
