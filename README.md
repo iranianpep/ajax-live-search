@@ -23,11 +23,11 @@ Assuming you have this text field:
 
 1. Copy the folders including `core`, `css`, `font`, `img`, `js` and `templates` to your project.
 
-2. Specify the required configurations specially database configurations in `core/Config.template.php` and change the file to `Config.php`. This file contains all the back-end settings for the plugin that have been explained in PHP Configs table.
+2. Specify the required configurations specially database configurations in `core/Config.template.php` and rename the file to `Config.php`. This file contains all the back-end settings for the plugin that have been explained in PHP Configs table.
 
 3. Include `js/ajaxlivesearch.min.js` or `js/ajaxlivesearch.js` and `css/ajaxlivesearch.min.css` or `css/ajaxlivesearch.css` in your page.
 
-4. Change the url for `Access-Control-Allow-Origin header` in `core/AjaxProcessor.php`.
+4. Change the URL for `Access-Control-Allow-Origin header` in `core/AjaxProcessor.php` to your project URL. Currently it is `http://ajaxlivesearch.com`.
 
 5. Make sure `core/Handler.php` and `core/Config.php` are included in your (PHP) page and you have these lines at the very top of the file (Check `index.php`):
 
@@ -43,7 +43,7 @@ Assuming you have this text field:
     $handler->getJavascriptAntiBot();
 	```
 	
-6. Lastly, hook the plugin to the text field and pass required options (loaded_at & token):
+6. Lastly, hook the plugin to the text field and pass the required options (loaded_at & token):
 
 	```
 jQuery("#ls_query").ajaxlivesearch({
