@@ -61,7 +61,7 @@ You can also post additional parameters to the server if you need. To achieve th
 For example, in this case you can access the data attribute in PHP like this:
     
     ```
-    // key is transformed to lowercase
+// key is transformed to lowercase
 $additionalData = $_POST['additionaldata'];
     ```
 
