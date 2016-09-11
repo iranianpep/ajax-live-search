@@ -18,6 +18,7 @@ Thanks to [BrowserStack](http://browserstack.com) for supporting this project.
 ## Getting started with Ajax Live Search
 
 Assuming you have this text field:
+
 `<input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ...">`
 
 1. Copy the folders including `core`, `css`, `font`, `img`, `js` and `templates` to your project.
