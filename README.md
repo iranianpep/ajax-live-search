@@ -17,7 +17,7 @@ Thanks to [BrowserStack](http://browserstack.com) for supporting this project.
 
 ## Getting started with Ajax Live Search
 
-Assuming you have this text field:
+Getting the current example in `index.php` to work including creating a dummy database and a table should not take longer than 7 minutes. But it will take more in case you need to integrate it to an existing project. To achieve that assuming you have this text field:
 
 `<input type="text" class='mySearch' id="ls_query" placeholder="Type to start searching ...">`
 
