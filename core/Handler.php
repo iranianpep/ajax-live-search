@@ -41,7 +41,7 @@ class Handler
     {
         $whiteList = ['token', 'anti_bot'];
 
-        if (in_array($sessionParameter, $whiteList) &&
+        if (in_array($sessionParameter, $whiteList) && isset($_SESSION['ls_session']) &&
             $_SESSION['ls_session'][$sessionParameter] === $sessionValue
         ) {
             return true;
@@ -317,15 +317,17 @@ class Handler
             $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
             // if requested, generate column headers
-            $headers = array_keys($rows[0]);
+            $headers = !empty($rows[0]) ? array_keys($rows[0]) : [];
 
             if (isset($dbInfo['displayHeader']['active']) && $dbInfo['displayHeader']['active'] == true) {
                 $mapper = !empty($dbInfo['displayHeader']['mapper']) ? $dbInfo['displayHeader']['mapper'] : [];
 
-                foreach ($headers as $aHeaderKey => $aHeader) {
-                    $aHeaderText = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
+                if (!empty($headers)) {
+                    foreach ($headers as $aHeaderKey => $aHeader) {
+                        $aHeaderText = array_key_exists($aHeader, $mapper) ? $mapper[$aHeader] : $aHeader;
 
-                    $headers[$aHeaderKey] = $aHeaderText;
+                        $headers[$aHeaderKey] = $aHeaderText;
+                    }
                 }
             }
         } else {
