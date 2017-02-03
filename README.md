@@ -13,7 +13,8 @@ AJAX Live Search is a jQuery plugin / PHP search form that searches and displays
 --- | --- | --- | --- | --- |
 IE 8+ ✔ | Chrome ✔ | Firefox ✔ | Opera ✔ | Safari ✔ |
 
-Thanks to [BrowserStack](http://browserstack.com) for supporting this project.
+Thanks to [BrowserStack](http://browserstack.com) and [JetBrains](https://www.jetbrains.com) for supporting this project.
+
 
 ## Getting started with Ajax Live Search
 
