@@ -4,8 +4,8 @@ AJAX Live Search is a jQuery plugin / PHP search form that searches and displays
 
 ## Demo
 
-[Check it it in action.](http://ajaxlivesearch.com)<br>
-<img src='http://ajaxlivesearch.com/img/ajax_demo.gif'>
+[Check it it in action.](https://ajaxlivesearch.com)<br>
+<img src='https://ajaxlivesearch.com/img/ajax_demo.gif'>
 
 ## Browser Support
 
@@ -28,7 +28,7 @@ Getting the current example in `index.php` to work including creating a dummy da
 
 3. Include `js/ajaxlivesearch.min.js` or `js/ajaxlivesearch.js` and `css/ajaxlivesearch.min.css` or `css/ajaxlivesearch.css` in your page.
 
-4. Change the URL for `Access-Control-Allow-Origin header` in `core/AjaxProcessor.php` to your project URL. Currently it is `http://ajaxlivesearch.com`.
+4. Change the URL for `Access-Control-Allow-Origin header` in `core/AjaxProcessor.php` to your project URL. Currently it is `https://ajaxlivesearch.com`.
 
 5. Make sure `core/Handler.php` and `core/Config.php` are included in your (PHP) page and you have these lines at the very top of the file (Check `index.php`):
 
