@@ -1,0 +1,5 @@
+var range = new Range(),
+    firstText = p.childNodes[1],
+    secondText = em.firstChild
+range.setStart(firstText, 9) // do not forget the leading space
+range.setEnd(secondText, 4)
