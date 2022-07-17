@@ -1,5 +1,8 @@
 # [AJAX Live Search](http://ajaxlivesearch.com)
 
+*** This is not maintained anymore ***
+I started this project a few years ago, but a lot has been changed so far. Also, because of the coupling between different layers, and also old technologies (jQuery!) this is not a scalable project. Thanks a lot for all the support but unfortunately I have to archive this project :(
+
 AJAX Live Search is a jQuery plugin / PHP search form that searches and displays the result as you type similar to Google Autocomplete feature.
 
 ## Demo
